@@ -9,7 +9,14 @@ def _get_client() -> OpenAI:
     if _client is None:
         _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     return _client
-
+# --- 追加：指数バックオフ + ジッター ---
+def _sleep_backoff(attempt, base=0.8, cap=8.0, jitter=True):
+    delay = min(cap, base * (2 ** attempt))
+    if jitter:
+        delay += random.random()
+    logging.warning(f"[Retry] Waiting {delay:.1f} seconds before next attempt...")
+    time.sleep(delay)
+# -----------------------------------------
 def call_gpt_haiku(payload: dict) -> dict:
     """新作俳句＋意訳＋参照理由をJSONで返す。"""
     client = _get_client()
