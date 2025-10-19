@@ -300,7 +300,7 @@ if st.session_state.get("haiku_data"):
                     "created_at": datetime.now().isoformat(timespec="seconds"),
                 }
                 st.session_state.img_paths = save_artifacts(st.session_state.img, meta, output_dir=OUTPUT_DIR)
-                st.success("✨ 画像を生成して保存しました！")
+            
 
         # 4) 画像とDLボタンは “必ずボタンの下” に描画
         with image_area:
