@@ -451,10 +451,10 @@ elif not haiku_en:
     st.info("まず③で英語俳句を生成してください。")
 else:
 
-# === 位置の選択 ===
-options = ["下部中央", "右下", "左下", "中央", "右上", "左上", "上部中央"]
-
-# --- ラジオの初期化 ---
+    # === 位置の選択 ===
+    options = ["下部中央", "右下", "左下", "中央", "右上", "左上", "上部中央"]
+    
+    # --- ラジオの初期化 ---
     if "pos_choice" not in st.session_state:
         st.session_state.pos_choice = "左上"
     
