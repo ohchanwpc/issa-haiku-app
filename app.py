@@ -328,7 +328,7 @@ if st.button("③ 英語俳句を生成", key="btn_make_english"):
         st.warning("先に『① 俳句生成』を実行してください。")
     else:
         h = st.session_state.haiku_data
-        with st.spinner("英語俳句（X用）を生成中..."):
+        with st.spinner("英語俳句を生成中..."):
             st.session_state.twitter_block = generate_english_tweet_block(
                 h.get("haiku_ja",""), h.get("explanation_ja","")
             )
