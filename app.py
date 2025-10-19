@@ -38,7 +38,7 @@ div[data-testid="stImage"] img, .stImage img, figure img { display: block; margi
 </style>
 """, unsafe_allow_html=True)
 
-# st.title("🍃 俳句 × 浮世絵 生成")
+# st.title("🍃 一茶のこころ × 浮世絵の風")
 
 # 👇 代わりにこれを追加
 st.markdown("""
