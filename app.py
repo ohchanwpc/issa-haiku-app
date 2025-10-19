@@ -340,6 +340,7 @@ if st.session_state.get("twitter_block"):
 # ==== ④ 画像を英語俳句入りで再出力（API合成：画像内に文字） ==========================
 from image_gen import edit_image_with_text
 import re, io
+import streamlit as st
 
 st.markdown("### ④ 画像を英語俳句入りで再出力")
 
@@ -364,86 +365,103 @@ haiku_en = extract_haiku_en_from_block(twitter_block).strip() or \
            ((st.session_state.get("haiku_en") or "") or
             ((st.session_state.get("haiku_data") or {}).get("haiku_en","") or "")).strip()
 
+# --- 初期化（session_state を唯一の真実に） ---
+POS_ANCHOR_TEXT = {
+    "下部中央": "bottom-center",
+    "右下":     "bottom-right",
+    "左下":     "bottom-left",
+    "中央":     "center",
+    "右上":     "top-right",
+    "左上":     "top-left",
+}
+if "pos_choice" not in st.session_state:
+    st.session_state.pos_choice = "左上"
+if "inset_pct" not in st.session_state:
+    st.session_state.inset_pct = 5
+if "min_bottom_px" not in st.session_state:
+    st.session_state.min_bottom_px = 52
+if "line_spacing" not in st.session_state:
+    st.session_state.line_spacing = 1.35
+if "auto_sync_layout" not in st.session_state:
+    st.session_state.auto_sync_layout = True
+
+def build_directives(haiku_en, anchor_text, inset_pct, min_bottom_px, line_spacing):
+    return f"""Typeset the following English haiku **inside the existing artwork** (no bands, no extra margins, no canvas expansion).
+Use Allura font; if unavailable, use a similar elegant script. Keep exact line breaks; no quotes, no extra text:
+{haiku_en}
+
+Layout constraints (important):
+- Do not add any translucent band, shape, or new margins.
+- Place the poem at the {anchor_text} area of the scene.
+- Respect a safe inset of {inset_pct}% from all edges; no glyph may touch or cross the edges.
+- Keep the text baseline at least {min_bottom_px}px above the bottom edge (on a 1024×1024 canvas).
+- If there is any risk of clipping, automatically reduce the font size and increase line spacing to about {line_spacing}×.
+- Apply a subtle shadow or thin outline for legibility, but keep it unobtrusive.
+- Preserve the ukiyo-e look-and-feel; do not alter the scene except placing the text.
+- Final output must be exactly 1024×1024."""
+
+# 初期のレイアウト指示
+if "remix_directives_area" not in st.session_state:
+    st.session_state.remix_directives_area = build_directives(
+        haiku_en,
+        POS_ANCHOR_TEXT[st.session_state.pos_choice],
+        st.session_state.inset_pct,
+        st.session_state.min_bottom_px,
+        st.session_state.line_spacing,
+    )
+
 if base_img is None:
     st.info("まず②で画像を生成してください。")
 elif not haiku_en:
     st.info("まず③で英語俳句を生成してください。")
 else:
-    # 位置（これは常時見せる）
-    pos = st.radio(
-        "文字の配置（画像内）", 
+    # 位置の選択
+    choice = st.radio(
+        "文字の配置（画像内）",
         ["下部中央", "右下", "左下", "中央", "右上", "左上"],
-        index=0, horizontal=True
+        key="pos_choice",
+        index=["下部中央","右下","左下","中央","右上","左上"].index(st.session_state.pos_choice),
+        horizontal=True
     )
-    anchor_map = {
-        "下部中央": "bottom-center",
-        "右下": "bottom-right",
-        "左下": "bottom-left",
-        "中央": "center",
-        "右上": "top-right",
-        "左上": "top-left",
-    }
-    anchor = anchor_map[pos]
 
-    # 既定パラメータ（折り畳みの初期値）
-    default_inset_pct = 5
-    default_min_bottom_px = 52
-    default_line_spacing = 1.35
+    # 自動同期トグル
+    st.checkbox("レイアウト指示を選択・スライダーに合わせて自動更新する",
+                key="auto_sync_layout")
 
-    # ===== 折り畳み：詳細調整とレイアウト指示 =====
+    # ===== 折り畳み：詳細調整 =====
     with st.expander("詳細レイアウト設定（必要な時だけ開く）", expanded=False):
-        inset_pct = st.slider("端からのインセット（%）", 2, 10, default_inset_pct, 1)
-        min_bottom_px = st.slider("下端からの最低ベースライン距離（px）", 24, 96, default_min_bottom_px, 4)
-        line_spacing = st.slider("行間倍率", 1.1, 1.8, default_line_spacing, 0.05)
+        st.session_state.inset_pct = st.slider("端からのインセット（%）", 2, 10, st.session_state.inset_pct, 1)
+        st.session_state.min_bottom_px = st.slider("下端からの最低ベースライン距離（px）", 24, 96, st.session_state.min_bottom_px, 4)
+        st.session_state.line_spacing = st.slider("行間倍率", 1.1, 1.8, st.session_state.line_spacing, 0.05)
 
-        # 既定の指示文（編集可）
-        default_directives = f"""Typeset the following English haiku **inside the existing artwork** (no bands, no extra margins, no canvas expansion).
-Use Allura font; if unavailable, use a similar elegant script. Keep exact line breaks; no quotes, no extra text:
-{haiku_en}
+    # 自動同期がONなら、毎リランで指示を最新化
+    if st.session_state.auto_sync_layout:
+        st.session_state.remix_directives_area = build_directives(
+            haiku_en,
+            POS_ANCHOR_TEXT[st.session_state.pos_choice],
+            st.session_state.inset_pct,
+            st.session_state.min_bottom_px,
+            st.session_state.line_spacing,
+        )
 
-Layout constraints (important):
-- Do not add any translucent band, shape, or new margins.
-- Place the poem at the {anchor} area of the scene.
-- Respect a safe inset of {inset_pct}% from all edges; no glyph may touch or cross the edges.
-- Keep the text baseline at least {min_bottom_px}px above the bottom edge (on a 1024×1024 canvas).
-- If there is any risk of clipping, automatically reduce the font size and increase line spacing to about {line_spacing}×.
-- Apply a subtle shadow or thin outline for legibility, but keep it unobtrusive.
-- Preserve the ukiyo-e look-and-feel; do not alter the scene except placing the text.
-- Final output must be exactly 1024×1024."""
-        directives = st.text_area("レイアウト指示（編集可）", value=default_directives, height=260, key="remix_directives_area")
-
-    # 折り畳みを開かなかった場合でも指示が無になることを防ぐ
-    if "remix_directives_area" not in st.session_state or not st.session_state.remix_directives_area:
-        # 折り畳み未開時は既定値を組み直す
-        inset_pct = default_inset_pct
-        min_bottom_px = default_min_bottom_px
-        line_spacing = default_line_spacing
-        directives = f"""Typeset the following English haiku **inside the existing artwork** (no bands, no extra margins, no canvas expansion).
-Use Allura font; if unavailable, use a similar elegant script. Keep exact line breaks; no quotes, no extra text:
-{haiku_en}
-
-Layout constraints (important):
-- Do not add any translucent band, shape, or new margins.
-- Place the poem at the {anchor} area of the scene.
-- Respect a safe inset of {inset_pct}% from all edges; no glyph may touch or cross the edges.
-- Keep the text baseline at least {min_bottom_px}px above the bottom edge (on a 1024×1024 canvas).
-- If there is any risk of clipping, automatically reduce the font size and increase line spacing to about {line_spacing}×.
-- Apply a subtle shadow or thin outline for legibility, but keep it unobtrusive.
-- Preserve the ukiyo-e look-and-feel; do not alter the scene except placing the text.
-- Final output must be exactly 1024×1024."""
+    # ユーザー編集可（Single Source of Truth は session_state）
+    directives = st.text_area(
+        "レイアウト指示（編集可）",
+        value=st.session_state.remix_directives_area,
+        key="remix_directives_area",
+        height=260
+    )
 
     # 実行ボタン
     if st.button("④ 英語俳句入りで再出力", key="btn_remix_en_overlay"):
         with st.spinner("英語俳句を画像内に組版して再出力中..."):
             final_img = edit_image_with_text(base_img, directives, size="1024x1024")
 
-        # ②と同じ“見た目サイズ”で表示（②は width=500 なので合わせる）
-        # ピクセル寸法も元画像と異なれば揃える（保険）
         if final_img.size != base_img.size:
             final_img = final_img.resize(base_img.size)
 
         st.session_state.img_with_en = final_img
-        st.image(final_img, caption="✅ 最終画像（画像内に英語俳句）", width=500)  # ←②と同じ幅に統一
+        st.image(final_img, caption="✅ 最終画像（画像内に英語俳句）", width=500)
 
         buf = io.BytesIO()
         final_img.save(buf, format="PNG")
