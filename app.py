@@ -464,13 +464,14 @@ else:
         )
 
     # ユーザー編集可（Single Source of Truth は session_state）
-    directives = st.text_area(
-        "レイアウト指示（編集可）",
-        value=st.session_state.remix_directives_area,
-        key="remix_directives_area",
-        height=260
-    )
-
+    # 変更後（折り畳み式に）：
+    with st.expander("📝 レイアウト指示（編集可）", expanded=False):
+        directives = st.text_area(
+            "（必要に応じて編集してください）",
+            value=st.session_state.remix_directives_area,
+            key="remix_directives_area",
+            height=260
+        )
     # 実行ボタン
     if st.button("④ 英語俳句入りで再出力", key="btn_remix_en_overlay"):
         with st.spinner("英語俳句を画像内に組版して再出力中..."):
