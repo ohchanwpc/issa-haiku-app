@@ -245,33 +245,44 @@ col1, col2 = st.columns(2)
 
 # ① 俳句生成
 with col1:
-    if st.button("① 俳句生成", key="btn_make_haiku"):
-        if not (st.session_state.references_locked and st.session_state.references):
-            st.warning("参照句が未確定です。『条件を確定（参照句を確定）』を押してください。")
-        else:
-            payload = {
-                "season": st.session_state.season,
-                "plutchik": st.session_state.plutchik,
-                "aesthetic": st.session_state.aesthetic,
-                "keyword": keyword,
-                "experience": experience,
-                "references": st.session_state.references
-            }
-            with st.spinner("俳句を生成中..."):
-                st.session_state.haiku_data = call_gpt_haiku(payload)
+    # Streamlitフォームでラップ（内部変更では再実行されない）
+    with st.form("haiku_form"):
+        submitted = st.form_submit_button("① 俳句生成", use_container_width=True)
 
-            if st.session_state.haiku_data:
-                h = st.session_state.haiku_data
-                st.session_state.image_prompt = build_image_prompt(
-                    haiku_ja=h.get("haiku_ja", ""),
-                    explanation_ja=h.get("explanation_ja", ""),
-                    season=st.session_state.season,
-                    keyword=keyword,
-                    aesthetic=st.session_state.aesthetic
-                )
+    # ボタン押下時にだけ実行（busyフラグで多重防止）
+    if submitted and not st.session_state.get("busy"):
+        st.session_state["busy"] = True
+        try:
+            if not (st.session_state.references_locked and st.session_state.references):
+                st.warning("参照句が未確定です。『条件を確定（参照句を確定）』を押してください。")
+            else:
+                payload = {
+                    "season": st.session_state.season,
+                    "plutchik": st.session_state.plutchik,
+                    "aesthetic": st.session_state.aesthetic,
+                    "keyword": keyword,
+                    "experience": experience,
+                    "references": st.session_state.references
+                }
+
+                with st.spinner("俳句を生成中..."):
+                    st.session_state.haiku_data = call_gpt_haiku(payload)
+
+                if st.session_state.haiku_data:
+                    h = st.session_state.haiku_data
+                    st.session_state.image_prompt = build_image_prompt(
+                        haiku_ja=h.get("haiku_ja", ""),
+                        explanation_ja=h.get("explanation_ja", ""),
+                        season=st.session_state.season,
+                        keyword=keyword,
+                        aesthetic=st.session_state.aesthetic
+                    )
+        finally:
+            st.session_state["busy"] = False  # 実行完了後に解除
 
 with col2:
     st.caption("①で俳句を確定 → 下の②画像生成ボタンで画像生成できます。")
+
 
 # 俳句表示
 if st.session_state.get("haiku_data"):
