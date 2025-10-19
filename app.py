@@ -156,29 +156,30 @@ emotion_core = {
 
 
 # ===== ステップ4以降: 参照句確定エリア =====
-st.markdown("<!-- CSS test passed -->", unsafe_allow_html=True)
+# ===== グローバルCSS（ステップ見出し・フォーム余白の調整） =====
+CSS_GLOBAL = """
+<style>
+/* ステップ見出し */
+.step-label {
+    font-size: 14px !important;      /* ステップ1と同じサイズ */
+    font-weight: 400 !important;     /* 標準の太さ */
+    margin-top: 0.8em !important;
+    margin-bottom: -3.2em !important; /* ←ここを微調整 */
+}
 
-#st.markdown("""
-#<style>
-#/* ステップ見出し */
-#.step-label {
-#    font-size: 14px !important;      /* ステップ1と同じサイズ */
-#    font-weight: 400 !important;     /* 標準の太さ */
-#    margin-top: 0.8em !important;
-#    margin-bottom: -3.2em !important; /* ←ここを微調整 */
-#}
+/* Streamlit の入力フォーム全般に適用 */
+div[data-baseweb="input"] {
+    margin-top: 0 !important;        /* 上方向のマージンを削除 */
+    padding-top: 0 !important;       /* 内側の余白も削除 */
+}
+textarea {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+</style>
+"""
+st.markdown(CSS_GLOBAL, unsafe_allow_html=True)
 
-#/* Streamlit の入力フォーム全般に適用 */
-#div[data-baseweb="input"] {
-#    margin-top: 0 !important;        /* 上方向のマージンを削除 */
-#    padding-top: 0 !important;       /* 内側の余白も削除 */
-#}
-#textarea {
-#    margin-top: 0 !important;
-#    padding-top: 0 !important;
-#}
-#</style>
-#""", unsafe_allow_html=True)
 
 st.markdown('<p class="step-label">ステップ4: キーワード（例：川、家族、影）を入力してください</p>', unsafe_allow_html=True)
 keyword = st.text_input("", value="紅葉")
