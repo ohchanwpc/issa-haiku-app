@@ -415,14 +415,31 @@ if base_img is None:
 elif not haiku_en:
     st.info("まず③で英語俳句を生成してください。")
 else:
-    # 位置の選択
+# === 位置の選択 ===
+options = ["下部中央", "右下", "左下", "中央", "右上", "左上"]
+
+# 初期化：最初の一回だけ既定値を入れる
+if "pos_choice" not in st.session_state:
+    st.session_state.pos_choice = "左上"  # 既定値
+
+# 初回は index を渡し、それ以降は渡さない（警告防止）
+if "pos_choice__inited" not in st.session_state:
     choice = st.radio(
         "文字の配置（画像内）",
-        ["下部中央", "右下", "左下", "中央", "右上", "左上"],
+        options,
+        index=options.index(st.session_state.pos_choice),
         key="pos_choice",
-        index=["下部中央","右下","左下","中央","右上","左上"].index(st.session_state.pos_choice),
         horizontal=True
     )
+    st.session_state.pos_choice__inited = True
+else:
+    choice = st.radio(
+        "文字の配置（画像内）",
+        options,
+        key="pos_choice",
+        horizontal=True
+    )
+
 
     # 自動同期トグル
     st.checkbox("レイアウト指示を選択・スライダーに合わせて自動更新する",
