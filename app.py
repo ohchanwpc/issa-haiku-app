@@ -55,14 +55,27 @@ st.markdown("""
 }
 </style>
 
-<h3 class='responsive-title'>一茶のこころ × 浮世絵の風</h3>
+<h3 class='responsive-title'>🍃 一茶のこころ × 浮世絵の風</h3>
 """, unsafe_allow_html=True)
 
 
 st.markdown("""
-<div style='font-size:14px; color:#555; margin-top:-10px;'>
+<style>
+.subtext {
+  text-align: center;               /* 中央寄せ */
+  font-size: clamp(14px, 2.5vw, 17px);  /* 画面幅に応じて自動調整 */
+  color: #555;                      /* 落ち着いた文字色 */
+  line-height: 1.6;                 /* 行間 */
+  margin-top: -10px;                /* タイトルとの距離を微調整 */
+}
+</style>
+
+<div class="subtext">
 小林一茶のまなざしを現代に。<br>
 季節・感情・美意識を選び、AIとともに新しい俳句と浮世絵を生み出します。<br>
+</div>
+""", unsafe_allow_html=True)
+
  
 </div>
 """, unsafe_allow_html=True)
