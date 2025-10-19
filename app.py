@@ -450,38 +450,41 @@ if base_img is None:
 elif not haiku_en:
     st.info("まず③で英語俳句を生成してください。")
 else:
-    # === 位置の選択 ===
-    options = ["下部中央", "右下", "左下", "中央", "右上", "左上", "上部中央"]
+# === 位置の選択 ===
+options = ["下部中央", "右下", "左下", "中央", "右上", "左上", "上部中央"]
 
-    # 初期化：最初の一回だけ既定値を入れる
-    if "pos_choice" not in st.session_state:
-        st.session_state.pos_choice = "左上"  # 既定値
+# --- ラジオの初期化 ---
+if "pos_choice" not in st.session_state:
+    st.session_state.pos_choice = "左上"
 
-    # 初回は index を渡し、それ以降は渡さない（警告防止）
-    if "pos_choice__inited" not in st.session_state:
-        choice = st.radio(
-            "文字の配置（画像内）",
-            options,
-            index=options.index(st.session_state.pos_choice),
-            key="pos_choice",
-            horizontal=True
-        )
-        st.session_state.pos_choice__inited = True
-    else:
-        choice = st.radio(
-            "文字の配置（画像内）",
-            options,
-            key="pos_choice",
-            horizontal=True
-        )
+if "pos_choice__inited" not in st.session_state:
+    choice = st.radio(
+        "文字の配置（画像内）",
+        options,
+        index=options.index(st.session_state.pos_choice),
+        key="pos_choice",
+        horizontal=True
+    )
+    st.session_state.pos_choice__inited = True
+else:
+    choice = st.radio(
+        "文字の配置（画像内）",
+        options,
+        key="pos_choice",
+        horizontal=True
+    )
 
-    # 初期化（最初の1回だけTrueに）
-    if "auto_sync_layout" not in st.session_state:
-        st.session_state.auto_sync_layout = True  # ← デフォルトON
+# --- checkboxの初期化（1回だけTrue）---
+if "auto_sync_layout__inited" not in st.session_state:
+    st.session_state.auto_sync_layout = True   # 既定ON
+    st.session_state.auto_sync_layout__inited = True
 
-    # 自動同期トグル
-    st.checkbox("配置変更に合わせてレイアウト指示を自動更新する",
-                key="auto_sync_layout")
+# 既定値は value= に渡す（key と併用OK：初回のみ既定として効く）
+st.checkbox(
+    "配置変更に合わせてレイアウト指示を自動更新する",
+    key="auto_sync_layout",
+    value=st.session_state.auto_sync_layout
+)
 
     # ===== 折り畳み：詳細調整 =====
     with st.expander("🎛 レイアウト調整（必要な時だけ開く）", expanded=False):
