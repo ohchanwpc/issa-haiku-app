@@ -38,7 +38,26 @@ div[data-testid="stImage"] img, .stImage img, figure img { display: block; margi
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🍃 俳句 × 浮世絵 生成")
+# st.title("🍃 俳句 × 浮世絵 生成")
+
+# 👇 代わりにこれを追加
+st.markdown("""
+<style>
+/* タイトルをレスポンシブに調整 */
+.responsive-title {
+  font-size: clamp(20px, 5vw, 28px);  /* 幅に応じて自動調整 */
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;  /* 折り返し防止 */
+  overflow: hidden;
+  text-overflow: ellipsis;  /* はみ出した場合「…」表示 */
+  margin-top: -10px;  /* 上下余白微調整（任意） */
+}
+</style>
+
+<h3 class='responsive-title'>🍃 俳句 × 浮世絵 生成</h3>
+""", unsafe_allow_html=True)
+
 
 st.markdown("""
 <div style='font-size:14px; color:#555; margin-top:-10px;'>
