@@ -199,13 +199,15 @@ with st.expander("📚 参照句（小林一茶の俳句から選定条件を元
         st.session_state.image_prompt = None
         st.session_state.img = None
         st.rerun()
+DEBUG = False  # ← 本番時はFalse、開発時だけTrueに
 
-st.caption(
-    f"🛠 state: refs_locked={st.session_state.get('references_locked')} / "
-    f"haiku={'ok' if st.session_state.get('haiku_data') else '-'} / "
-    f"prompt={'ok' if st.session_state.get('image_prompt') else '-'} / "
-    f"img={'ok' if st.session_state.get('img') is not None else '-'}"
-)
+if DEBUG:
+    st.caption(
+        f"🛠 state: refs_locked={st.session_state.get('references_locked')} / "
+        f"haiku={'ok' if st.session_state.get('haiku_data') else '-'} / "
+        f"prompt={'ok' if st.session_state.get('image_prompt') else '-'} / "
+        f"img={'ok' if st.session_state.get('img') is not None else '-'}"
+    )
 
 col1, col2 = st.columns(2)
 
