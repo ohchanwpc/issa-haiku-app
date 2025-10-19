@@ -475,7 +475,9 @@ else:
             horizontal=True
         )
 
-
+    # 初期化（最初の1回だけTrueに）
+    if "auto_sync_layout" not in st.session_state:
+        st.session_state.auto_sync_layout = True  # ← デフォルトON
 
     # 自動同期トグル
     st.checkbox("配置変更に合わせてレイアウト指示を自動更新する",
