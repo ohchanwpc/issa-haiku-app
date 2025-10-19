@@ -474,7 +474,7 @@ else:
         )
     # 実行ボタン
     if st.button("④ 英語俳句入りで再出力", key="btn_remix_en_overlay"):
-        with st.spinner("英語俳句を画像内に組版して再出力中..."):
+        with st.spinner("英語俳句を画像に配置中..."):
             final_img = edit_image_with_text(base_img, directives, size="1024x1024")
 
         if final_img.size != base_img.size:
