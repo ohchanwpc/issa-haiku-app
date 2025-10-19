@@ -69,15 +69,9 @@ experience = {payload.get('experience')}
 {refs_numbered}
 """
 
-    resp = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "system", "content": system_prompt},
-                  {"role": "user", "content": user_prompt}],
-        temperature=0.7,
-        response_format={"type": "json_object"}
-    )
-    # --- 追加：再試行付きAPI呼び出し ---
+    # --- 再試行付きAPI呼び出し（※二重呼び出しを削除） ---
     last_err = None
+    resp = None
     for attempt in range(max_retries):
         try:
             resp = client.chat.completions.create(
@@ -89,21 +83,20 @@ experience = {payload.get('experience')}
                 temperature=0.7,
                 response_format={"type": "json_object"}
             )
-            break  # 成功したらループを抜ける
+            break  # 成功
         except (RateLimitError, APIStatusError) as e:
             code = getattr(e, "status_code", None)
-            # 429, 500, 503 のみ再試行
+            # 429/500/503 ならバックオフして再試行
             if code in (429, 500, 503) or isinstance(e, RateLimitError):
                 last_err = e
-                logging.warning(f"[Attempt {attempt+1}] Rate limit or server error ({code}). Retrying...")
+                logging.warning(f"[Attempt {attempt+1}] Rate/Server error ({code}). Retrying…")
                 if attempt < max_retries - 1:
                     _sleep_backoff(attempt)
                     continue
-            raise  # 他のエラーは即座にraise
-    else:
-        # リトライ尽きた場合
-        raise last_err or RuntimeError("API request failed after retries")
+            # 再試行対象外 or 試行尽きた
+            raise last_err or e
     # --- ここまで ---
+
     content = resp.choices[0].message.content
     try:
         data = json.loads(content)
