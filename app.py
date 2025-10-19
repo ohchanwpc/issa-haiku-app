@@ -456,7 +456,7 @@ else:
     
     # --- ラジオの初期化 ---
     if "pos_choice" not in st.session_state:
-        st.session_state.pos_choice = "左上"
+        st.session_state.pos_choice = "下部中央"
     
     if "pos_choice__inited" not in st.session_state:
         choice = st.radio(
