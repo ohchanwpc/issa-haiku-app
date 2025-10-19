@@ -6,3 +6,5 @@ Pillow
 matplotlib
 scikit-learn
 python-dotenv
+requests
+tweepy
