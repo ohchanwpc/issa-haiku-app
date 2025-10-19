@@ -448,7 +448,7 @@ else:
                 key="auto_sync_layout")
 
     # ===== 折り畳み：詳細調整 =====
-    with st.expander("詳細レイアウト設定（必要な時だけ開く）", expanded=False):
+    with st.expander("🎛 レイアウト調整（必要な時だけ開く）", expanded=False):
         st.session_state.inset_pct = st.slider("端からのインセット（%）", 2, 10, st.session_state.inset_pct, 1)
         st.session_state.min_bottom_px = st.slider("下端からの最低ベースライン距離（px）", 24, 96, st.session_state.min_bottom_px, 4)
         st.session_state.line_spacing = st.slider("行間倍率", 1.1, 1.8, st.session_state.line_spacing, 0.05)
@@ -465,7 +465,7 @@ else:
 
     # ユーザー編集可（Single Source of Truth は session_state）
     # 変更後（折り畳み式に）：
-    with st.expander("📝 レイアウト指示（編集可）", expanded=False):
+    with st.expander("📝 レイアウト指示文（必要な時だけ編集）", expanded=False):
         directives = st.text_area(
             "（必要に応じて編集してください）",
             value=st.session_state.remix_directives_area,
