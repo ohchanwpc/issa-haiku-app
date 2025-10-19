@@ -112,7 +112,7 @@ st.session_state.season = st.radio(
 
 # ===== ステップ2: 表現したい感情を選択 =====
 if "plutchik" not in st.session_state:
-    st.session_state.plutchik = "悲しみ"
+    st.session_state.plutchik = "信頼"
 
 st.session_state.plutchik = st.radio(
     "ステップ2: 表現したい感情を選択してください",
@@ -182,10 +182,10 @@ st.markdown(CSS_GLOBAL, unsafe_allow_html=True)
 
 
 st.markdown('<p class="step-label">ステップ4: キーワード（例：川、家族、影）を入力してください</p>', unsafe_allow_html=True)
-keyword = st.text_input("", value="紅葉")
+keyword = st.text_input("", value="子猫")
 
-st.markdown('<p class="step-label">ステップ5: あなたの体験メモを入力してください</p>', unsafe_allow_html=True)
-experience = st.text_area("", value="風に散る紅葉の一枚が、掌に落ちてきた。命を燃やしきったあとの静けさが、そこにあった。人の一生もまた、かくのごとし。赤く散る葉を見送りながら、過ぎゆく日々を慈しむ心が生まれる。散ることは終わりではなく、土に還る約束なのだ。")
+st.markdown('<p class="step-label">ステップ5: あなたの体験・感情を入力してください</p>', unsafe_allow_html=True)
+experience = st.text_area("", value="納屋の隅で、小さな子猫が母を探して鳴いていた。冷たい風が入るたびに、その声が細く震える。掌に包むと、体は軽く、息はかすか。人はしばしば強さを誇るが、ほんとうの命の尊さは、こんな小さきものに宿るのだ。そっと母猫のいる藁の中へ戻しながら、わしの胸にも温もりが灯った。")
 
 # ===== ステップ6: 擬音語優先チェック =====
 prioritize_giongo = st.checkbox(
