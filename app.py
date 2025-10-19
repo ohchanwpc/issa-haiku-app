@@ -55,7 +55,7 @@ st.markdown("""
 }
 </style>
 
-<h3 class='responsive-title'>🍃 俳句 × 浮世絵 生成</h3>
+<h3 class='responsive-title'>一茶のこころ × 浮世絵の風</h3>
 """, unsafe_allow_html=True)
 
 
