@@ -62,11 +62,11 @@ st.markdown("""
 st.markdown("""
 <style>
 .subtext {
-  text-align: center;               /* 中央寄せ */
-  font-size: clamp(14px, 2.5vw, 17px);  /* 画面幅に応じて自動調整 */
-  color: #555;                      /* 落ち着いた文字色 */
-  line-height: 1.6;                 /* 行間 */
-  margin-top: -10px;                /* タイトルとの距離を微調整 */
+  text-align: center;                /* 中央寄せ */
+  font-size: clamp(14px, 2.5vw, 17px);  /* スマホ対応でフォント自動調整 */
+  color: #555;                       /* 落ち着いた文字色 */
+  line-height: 1.6;                  /* 行間 */
+  margin-top: -10px;                 /* タイトルとの距離を微調整 */
 }
 </style>
 
@@ -75,6 +75,7 @@ st.markdown("""
 季節・感情・美意識を選び、AIとともに新しい俳句と浮世絵を生み出します。<br>
 </div>
 """, unsafe_allow_html=True)
+
 
 
  
