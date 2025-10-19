@@ -373,6 +373,7 @@ POS_ANCHOR_TEXT = {
     "中央":     "center",
     "右上":     "top-right",
     "左上":     "top-left",
+    "上部中央": "top-center"
 }
 if "pos_choice" not in st.session_state:
     st.session_state.pos_choice = "左上"
@@ -416,7 +417,7 @@ elif not haiku_en:
     st.info("まず③で英語俳句を生成してください。")
 else:
     # === 位置の選択 ===
-    options = ["下部中央", "右下", "左下", "中央", "右上", "左上"]
+    options = ["下部中央", "右下", "左下", "中央", "右上", "左上", "上部中央"]
 
     # 初期化：最初の一回だけ既定値を入れる
     if "pos_choice" not in st.session_state:
