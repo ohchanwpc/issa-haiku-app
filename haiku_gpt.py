@@ -1,7 +1,14 @@
 
 from __future__ import annotations
-import os, re, json, time, random, logging  # ← time, random, loggingを追加
-from openai import OpenAI, RateLimitError, APIStatusError  # ← 例外も追加
+import os, re, json, time, random, logging  # ← 追加: time, random, logging
+from openai import OpenAI
+# SDK差を吸収：例外クラスが無い環境でも動くようにフォールバック
+try:
+    from openai import RateLimitError, APIStatusError
+except Exception:  # 古いSDKなど
+    class RateLimitError(Exception): ...
+    class APIStatusError(Exception):
+        status_code: int | None = None
 
 _client = None
 def _get_client() -> OpenAI:
@@ -9,19 +16,22 @@ def _get_client() -> OpenAI:
     if _client is None:
         _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     return _client
-# --- 追加：指数バックオフ + ジッター ---
-def _sleep_backoff(attempt, base=0.8, cap=8.0, jitter=True):
+
+# --- 指数バックオフ + ジッター ---
+def _sleep_backoff(attempt: int, base: float = 0.8, cap: float = 8.0, jitter: bool = True):
     delay = min(cap, base * (2 ** attempt))
     if jitter:
         delay += random.random()
-    logging.warning(f"[Retry] Waiting {delay:.1f} seconds before next attempt...")
+    logging.warning(f"[Retry] wait {delay:.1f}s (attempt={attempt+1})")
     time.sleep(delay)
-# -----------------------------------------
-def call_gpt_haiku(payload: dict) -> dict:
+# -----------------------------------
+
+def call_gpt_haiku(payload: dict, max_retries: int = 5) -> dict:
     """新作俳句＋意訳＋参照理由をJSONで返す。"""
     client = _get_client()
     refs = payload.get('references', [])
     refs_numbered = "\n".join([f"{i+1}. {r.get('text','')} | 出典: {r.get('source','')}" for i, r in enumerate(refs)])
+
 
     system_prompt = """あなたは「小林一茶 × 新作俳句 × 参照句運用」の専門家です。
 以下のJSONだけを出力してください（余文・解説・前置き禁止）：
