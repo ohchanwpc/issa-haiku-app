@@ -1,7 +1,7 @@
 
 from __future__ import annotations
-import os, re, json
-from openai import OpenAI
+import os, re, json, time, random, logging  # ← time, random, loggingを追加
+from openai import OpenAI, RateLimitError, APIStatusError  # ← 例外も追加
 
 _client = None
 def _get_client() -> OpenAI:
