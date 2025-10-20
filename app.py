@@ -333,11 +333,11 @@ with st.spinner("俳句を生成中..."):
                 aesthetic=st.session_state.aesthetic
             )
 
-        finally:
-            st.session_state["busy"] = False  # 実行完了後に解除
+#        finally:
+#            st.session_state["busy"] = False  # 実行完了後に解除
 
-with col2:
-    st.caption("①で俳句を確定 → 下の②画像生成ボタンで画像生成できます。")
+#with col2:
+#    st.caption("①で俳句を確定 → 下の②画像生成ボタンで画像生成できます。")
 
 
 # 俳句表示
