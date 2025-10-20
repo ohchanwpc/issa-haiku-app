@@ -1,3 +1,5 @@
+logging.warning("[CALL] call_gpt_haiku invoked")
+
 # ===== haiku_gpt.py SAFE HEADER =====
 import os
 import time
