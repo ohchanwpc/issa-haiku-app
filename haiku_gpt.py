@@ -134,6 +134,9 @@ experience = {payload.get('experience')}
 参照俳句（必ず(1)(2)(3)で言及）:
 {refs_numbered}
 """
+sp_len = len(system_prompt)
+up_len = len(user_prompt)
+logging.warning("[PROMPT] system=%d chars, user=%d chars, total=%d", sp_len, up_len, sp_len+up_len)
 
     # 🧩 API呼び出し部（ここを新しく）
     def _api_call():
