@@ -293,11 +293,12 @@ with col1:
 
 with st.spinner("俳句を生成中..."):
     try:
+        # ---- 俳句生成呼び出し ----
         st.session_state.haiku_data = call_gpt_haiku(payload)
 
     except Exception as e:
+        # ---- エラー時の情報表示 ----
         import traceback
-        # --- 原因サマリをUIに出す ---
         resp = getattr(e, "response", None)
         headers = dict(getattr(resp, "headers", {}) or {}) if resp else {}
         status = getattr(e, "status_code", None)
@@ -314,15 +315,14 @@ with st.spinner("俳句を生成中..."):
             "x-ratelimit-reset-tokens":       headers.get("x-ratelimit-reset-tokens"),
         })
         if body_text:
-            st.code(body_text[:1200], language="json")  # 本文の先頭だけ表示（長文対策）
-        # 例外の種類だけ（トレース全体はCloudログに任せる）
+            st.code(body_text[:1200], language="json")  # 本文の先頭だけ表示
         st.code("".join(traceback.format_exception_only(type(e), e)))
 
-        # Cloudログにも流す（診断が済んだらこの raise は外してOK）
+        # Cloudログにも流す（診断が終わったらこの raise は外してOK）
         raise
 
     else:
-        # --- ここは成功時だけ走る（既存の処理をそのまま残す） ---
+        # ---- 成功時だけ走る処理 ----
         if st.session_state.haiku_data:
             h = st.session_state.haiku_data
             st.session_state.image_prompt = build_image_prompt(
