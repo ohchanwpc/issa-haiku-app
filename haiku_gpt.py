@@ -23,31 +23,39 @@ def _get_client() -> OpenAI:
         logging.warning(f"OPENAI_API_KEY head={key[:5]+'…' if key else 'None'}")
     return _client
 
-def _with_backoff(callable_fn, *, max_attempts=6, base=0.8, cap=12.0):
+def _with_backoff(callable_fn, *, max_attempts=3, base=0.8, cap=8.0):
+    import json, time, random, logging
     last_err = None
     for attempt in range(1, max_attempts + 1):
         try:
             return callable_fn()
         except RateLimitError as e:
             last_err = e
-            logging.error(f"[TRY {attempt}/{max_attempts}] RateLimitError: {getattr(e, 'message', repr(e))}")
+            logging.error(f"[TRY {attempt}/{max_attempts}] RateLimitError: {repr(e)}")
         except APIStatusError as e:
             last_err = e
             code = getattr(e, "status_code", None)
             body_text = None
+            headers = None
             try:
-                if hasattr(e, "response") and hasattr(e.response, "text"):
-                    body_text = e.response.text
+                if hasattr(e, "response"):
+                    headers = dict(getattr(e.response, "headers", {}) or {})
+                    body_text = getattr(e.response, "text", None)
             except Exception:
                 pass
-            logging.error(f"[TRY {attempt}/{max_attempts}] APIStatusError status={code} body={body_text}")
+            logging.error(
+                "[TRY %d/%d] APIStatusError status=%s headers=%s body=%s",
+                attempt, max_attempts, code, headers, body_text
+            )
+            # 429/5xxのみ再試行
             if code not in (429, 500, 502, 503, 504):
                 raise
         if attempt < max_attempts:
             sleep = min(cap, base * (2 ** (attempt - 1))) * (0.5 + random.random())
-            logging.warning(f"Retrying after {sleep:.2f}s …")
+            logging.warning("Retrying after %.2fs …", sleep)
             time.sleep(sleep)
     raise last_err
+
 # ===== /SAFE HEADER =====
 
 
