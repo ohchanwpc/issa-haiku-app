@@ -171,8 +171,6 @@ def generate_english_tweet_block(haiku_ja: str, explanation_ja: str) -> str:
 """
 client = _get_client()
 
-    client = _get_client()
-
     def _api_call():
         return client.chat.completions.create(
             model="gpt-4o-mini",
