@@ -57,6 +57,26 @@ def _with_backoff(callable_fn, *, max_attempts=3, base=0.8, cap=8.0):
     raise last_err
 
 # ===== /SAFE HEADER =====
+def _diag_probe_once():
+    """
+    小さなリクエストを1回だけ送り、レート制限ヘッダをログに出す診断用。
+    本番処理には影響しない。
+    """
+    import logging
+    client = _get_client()
+    # with_raw_response で headers を取得
+    raw = client.with_raw_response.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role":"system","content":"You are a helpful assistant."},
+            {"role":"user","content":"Say 'pong'."},
+        ],
+        max_tokens=5,
+        temperature=0.0,
+    )
+    logging.warning("[DIAG] status=%s headers=%s", raw.status_code, dict(raw.headers or {}))
+    resp = raw.parse()
+    logging.warning("[DIAG] content=%s", resp.choices[0].message.content.strip())
 
 
 
