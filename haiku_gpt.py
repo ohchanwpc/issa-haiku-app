@@ -30,21 +30,37 @@ def _get_client() -> OpenAI:
 
 
 # ✅ このすぐ下に入れる（おすすめ位置！）
-def _with_backoff(callable_fn, *, max_attempts=6, base=0.6, cap=8.0):
+def _with_backoff(callable_fn, *, max_attempts=6, base=0.8, cap=12.0):
     last_err = None
     for attempt in range(1, max_attempts + 1):
         try:
             return callable_fn()
         except RateLimitError as e:
             last_err = e
+            # 429系
+            logging.error(f"[TRY {attempt}/{max_attempts}] RateLimitError: {getattr(e, 'message', repr(e))}")
         except APIStatusError as e:
-            if getattr(e, "status_code", None) in (429, 500, 502, 503, 504):
-                last_err = e
-            else:
+            last_err = e
+            code = getattr(e, "status_code", None)
+            # 可能ならサーバ応答本文もログに
+            body_text = None
+            try:
+                if hasattr(e, "response") and hasattr(e.response, "text"):
+                    body_text = e.response.text
+            except Exception:
+                pass
+            logging.error(f"[TRY {attempt}/{max_attempts}] APIStatusError status={code} body={body_text}")
+            # 429/5xxのみ再試行、それ以外は即終了
+            if code not in (429, 500, 502, 503, 504):
                 raise
-        sleep = min(cap, base * (2 ** (attempt - 1))) * (0.5 + random.random())
-        time.sleep(sleep)
+        # ここまで来たら再試行
+        if attempt < max_attempts:
+            sleep = min(cap, base * (2 ** (attempt - 1))) * (0.5 + random.random())
+            logging.warning(f"Retrying after {sleep:.2f}s …")
+            time.sleep(sleep)
+    # 全滅したら“詳細付きで”再Throw
     raise last_err
+
 
 def call_gpt_haiku(payload: dict, max_retries: int = 5) -> dict:
     """新作俳句＋意訳＋参照理由をJSONで返す。"""
