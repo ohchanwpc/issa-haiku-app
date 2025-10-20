@@ -6,6 +6,8 @@ import time
 import random
 import logging
 import json
+import re
+
 
 
 from openai import OpenAI
