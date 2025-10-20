@@ -288,57 +288,57 @@ with col1:
                     "aesthetic": st.session_state.aesthetic,
                     "keyword": keyword,
                     "experience": experience,
-                    "references": st.session_state.references
+                    "references": st.session_state.references,
                 }
 
-with st.spinner("俳句を生成中..."):
-    try:
-        # ---- 俳句生成呼び出し ----
-        st.session_state.haiku_data = call_gpt_haiku(payload)
+                # ← payload を作ったこの分岐の“中”で spinner＋診断付きtry/exceptを回す
+                with st.spinner("俳句を生成中..."):
+                    try:
+                        # ---- 俳句生成呼び出し ----
+                        st.session_state.haiku_data = call_gpt_haiku(payload)
 
-    except Exception as e:
-        # ---- エラー時の情報表示 ----
-        import traceback
-        resp = getattr(e, "response", None)
-        headers = dict(getattr(resp, "headers", {}) or {}) if resp else {}
-        status = getattr(e, "status_code", None)
-        body_text = getattr(resp, "text", None) if resp else None
-        req_id = headers.get("x-request-id")
+                    except Exception as e:
+                        # ---- エラー時の情報表示（原因の見える化）----
+                        import traceback
+                        resp = getattr(e, "response", None)
+                        headers = dict(getattr(resp, "headers", {}) or {}) if resp else {}
+                        status = getattr(e, "status_code", None)
+                        body_text = getattr(resp, "text", None) if resp else None
+                        req_id = headers.get("x-request-id")
 
-        st.error("俳句生成でエラーが発生しました（診断情報）")
-        st.write({
-            "status": status,
-            "x-request-id": req_id,
-            "x-ratelimit-remaining-requests": headers.get("x-ratelimit-remaining-requests"),
-            "x-ratelimit-remaining-tokens":   headers.get("x-ratelimit-remaining-tokens"),
-            "x-ratelimit-reset-requests":     headers.get("x-ratelimit-reset-requests"),
-            "x-ratelimit-reset-tokens":       headers.get("x-ratelimit-reset-tokens"),
-        })
-        if body_text:
-            st.code(body_text[:1200], language="json")  # 本文の先頭だけ表示
-        st.code("".join(traceback.format_exception_only(type(e), e)))
+                        st.error("俳句生成でエラーが発生しました（診断情報）")
+                        st.write({
+                            "status": status,
+                            "x-request-id": req_id,
+                            "x-ratelimit-remaining-requests": headers.get("x-ratelimit-remaining-requests"),
+                            "x-ratelimit-remaining-tokens":   headers.get("x-ratelimit-remaining-tokens"),
+                            "x-ratelimit-reset-requests":     headers.get("x-ratelimit-reset-requests"),
+                            "x-ratelimit-reset-tokens":       headers.get("x-ratelimit-reset-tokens"),
+                        })
+                        if body_text:
+                            st.code(body_text[:1200], language="json")  # 本文の先頭だけ表示
+                        st.code("".join(traceback.format_exception_only(type(e), e)))
 
-        # Cloudログにも流す（診断が終わったらこの raise は外してOK）
-        raise
+                        # 診断完了後は raise を外す想定（今はログにも流す）
+                        raise
 
-    else:
-        # ---- 成功時だけ走る処理 ----
-        if st.session_state.haiku_data:
-            h = st.session_state.haiku_data
-            st.session_state.image_prompt = build_image_prompt(
-                haiku_ja=h.get("haiku_ja", ""),
-                explanation_ja=h.get("explanation_ja", ""),
-                season=st.session_state.season,
-                keyword=keyword,
-                aesthetic=st.session_state.aesthetic
-            )
+                    else:
+                        # ---- 成功時だけ走る処理 ----
+                        if st.session_state.haiku_data:
+                            h = st.session_state.haiku_data
+                            st.session_state.image_prompt = build_image_prompt(
+                                haiku_ja=h.get("haiku_ja", ""),
+                                explanation_ja=h.get("explanation_ja", ""),
+                                season=st.session_state.season,
+                                keyword=keyword,
+                                aesthetic=st.session_state.aesthetic,
+                            )
+        finally:
+            # ← 外側 try の finally で busy を必ず解除（成功/失敗に関わらず）
+            st.session_state["busy"] = False
 
-#        finally:
-#            st.session_state["busy"] = False  # 実行完了後に解除
-
-#with col2:
-#    st.caption("①で俳句を確定 → 下の②画像生成ボタンで画像生成できます。")
-
+with col2:
+    st.caption("①で俳句を確定 → 下の②画像生成ボタンで画像生成できます。")
 
 # 俳句表示
 if st.session_state.get("haiku_data"):
