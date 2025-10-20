@@ -1,38 +1,28 @@
+# ===== haiku_gpt.py SAFE HEADER =====
+import os
+import time
+import random
+import logging
 
-from __future__ import annotations
-import os, re, json, time, random, logging  # ← 追加: time, random, logging
 from openai import OpenAI
 from openai import RateLimitError, APIStatusError
 
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(levelname)s %(message)s")
-
-
-# SDK差を吸収：例外クラスが無い環境でも動くようにフォールバック
-try:
-    from openai import RateLimitError, APIStatusError
-except Exception:  # 古いSDKなど
-    class RateLimitError(Exception): ...
-    class APIStatusError(Exception):
-        status_code: int | None = None
 
 _client = None
 
 def _get_client() -> OpenAI:
     global _client
     if _client is None:
-        # 自動リトライOFF、タイムアウト明示
         _client = OpenAI(
             api_key=os.getenv("OPENAI_API_KEY"),
             max_retries=0,
             timeout=60,
         )
+        key = os.getenv("OPENAI_API_KEY")
+        logging.warning(f"OPENAI_API_KEY head={key[:5]+'…' if key else 'None'}")
     return _client
-key = os.getenv("OPENAI_API_KEY")
-logging.warning(f"OPENAI_API_KEY head={key[:5] + '…' if key else 'None'}")
 
-
-
-# ✅ このすぐ下に入れる（おすすめ位置！）
 def _with_backoff(callable_fn, *, max_attempts=6, base=0.8, cap=12.0):
     last_err = None
     for attempt in range(1, max_attempts + 1):
@@ -40,12 +30,10 @@ def _with_backoff(callable_fn, *, max_attempts=6, base=0.8, cap=12.0):
             return callable_fn()
         except RateLimitError as e:
             last_err = e
-            # 429系
             logging.error(f"[TRY {attempt}/{max_attempts}] RateLimitError: {getattr(e, 'message', repr(e))}")
         except APIStatusError as e:
             last_err = e
             code = getattr(e, "status_code", None)
-            # 可能ならサーバ応答本文もログに
             body_text = None
             try:
                 if hasattr(e, "response") and hasattr(e.response, "text"):
@@ -53,16 +41,15 @@ def _with_backoff(callable_fn, *, max_attempts=6, base=0.8, cap=12.0):
             except Exception:
                 pass
             logging.error(f"[TRY {attempt}/{max_attempts}] APIStatusError status={code} body={body_text}")
-            # 429/5xxのみ再試行、それ以外は即終了
             if code not in (429, 500, 502, 503, 504):
                 raise
-        # ここまで来たら再試行
         if attempt < max_attempts:
             sleep = min(cap, base * (2 ** (attempt - 1))) * (0.5 + random.random())
             logging.warning(f"Retrying after {sleep:.2f}s …")
             time.sleep(sleep)
-    # 全滅したら“詳細付きで”再Throw
     raise last_err
+# ===== /SAFE HEADER =====
+
 
 
 def call_gpt_haiku(payload: dict, max_retries: int = 5) -> dict:
