@@ -1,3 +1,17 @@
+# ---- DEBUG: show exact SyntaxError line in haiku_gpt.py ----
+try:
+    from haiku_gpt import call_gpt_haiku, generate_english_tweet_block
+except SyntaxError as e:
+    import traceback, sys
+    import pathlib
+    tb = traceback.format_exception_only(type(e), e)
+    # 画面とログに出す
+    import streamlit as st
+    st.error("haiku_gpt.py に SyntaxError があるようです。行番号と付近を確認してください。")
+    st.code("".join(tb))
+    # 再raise して Cloud のログにもフルで出す
+    raise
+# ---- /DEBUG ----
 
 import os
 from pathlib import Path
