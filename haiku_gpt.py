@@ -2,6 +2,11 @@
 from __future__ import annotations
 import os, re, json, time, random, logging  # ← 追加: time, random, logging
 from openai import OpenAI
+from openai import RateLimitError, APIStatusError
+
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(levelname)s %(message)s")
+
+
 # SDK差を吸収：例外クラスが無い環境でも動くようにフォールバック
 try:
     from openai import RateLimitError, APIStatusError
@@ -11,11 +16,18 @@ except Exception:  # 古いSDKなど
         status_code: int | None = None
 
 _client = None
+
 def _get_client() -> OpenAI:
     global _client
     if _client is None:
-        _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), max_retries=0, timeout=60)
+        # 自動リトライOFF、タイムアウト明示
+        _client = OpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            max_retries=0,
+            timeout=60,
+        )
     return _client
+
 
 # --- 指数バックオフ + ジッター ---
 def _sleep_backoff(attempt: int, base: float = 0.8, cap: float = 8.0, jitter: bool = True):
