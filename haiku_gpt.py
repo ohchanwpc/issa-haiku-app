@@ -14,7 +14,7 @@ _client = None
 def _get_client() -> OpenAI:
     global _client
     if _client is None:
-        _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), max_retries=0, timeout=60)
     return _client
 
 # --- 指数バックオフ + ジッター ---
