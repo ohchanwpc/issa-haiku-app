@@ -169,7 +169,7 @@ def generate_english_tweet_block(haiku_ja: str, explanation_ja: str) -> str:
 俳句の説明（日本語の意訳/背景の要点）:
 {explanation_ja}
 """
-client = _get_client()
+    client = _get_client()
 
     # ✅ ここから“関数の中”に置くこと（トップレベルに出さない）
     def _api_call():
