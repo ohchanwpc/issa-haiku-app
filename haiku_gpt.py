@@ -29,14 +29,22 @@ def _get_client() -> OpenAI:
     return _client
 
 
-# --- 指数バックオフ + ジッター ---
-def _sleep_backoff(attempt: int, base: float = 0.8, cap: float = 8.0, jitter: bool = True):
-    delay = min(cap, base * (2 ** attempt))
-    if jitter:
-        delay += random.random()
-    logging.warning(f"[Retry] wait {delay:.1f}s (attempt={attempt+1})")
-    time.sleep(delay)
-# -----------------------------------
+# ✅ このすぐ下に入れる（おすすめ位置！）
+def _with_backoff(callable_fn, *, max_attempts=6, base=0.6, cap=8.0):
+    last_err = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return callable_fn()
+        except RateLimitError as e:
+            last_err = e
+        except APIStatusError as e:
+            if getattr(e, "status_code", None) in (429, 500, 502, 503, 504):
+                last_err = e
+            else:
+                raise
+        sleep = min(cap, base * (2 ** (attempt - 1))) * (0.5 + random.random())
+        time.sleep(sleep)
+    raise last_err
 
 def call_gpt_haiku(payload: dict, max_retries: int = 5) -> dict:
     """新作俳句＋意訳＋参照理由をJSONで返す。"""
