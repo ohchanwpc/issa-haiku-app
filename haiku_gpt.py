@@ -27,6 +27,9 @@ def _get_client() -> OpenAI:
             timeout=60,
         )
     return _client
+key = os.getenv("OPENAI_API_KEY")
+logging.warning(f"OPENAI_API_KEY head={key[:5] + '…' if key else 'None'}")
+
 
 
 # ✅ このすぐ下に入れる（おすすめ位置！）
