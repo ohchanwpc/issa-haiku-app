@@ -257,6 +257,18 @@ if DEBUG:
 
 col1, col2 = st.columns(2)
 
+import time, uuid
+if "click_trace" not in st.session_state:
+    st.session_state.click_trace = []
+
+click_id = None
+if st.button("① 俳句生成", key="btn_make_haiku"):
+    click_id = f"{time.time():.3f}-{uuid.uuid4().hex[:6]}"
+    st.session_state.click_trace.append(click_id)
+    st.write(f"DEBUG: click_id={click_id}, total_clicks={len(st.session_state.click_trace)}")
+    # ここから payload 構築→ call_gpt_haiku(payload) へ
+
+
 # ① 俳句生成
 with col1:
     # Streamlitフォームでラップ（内部変更では再実行されない）
