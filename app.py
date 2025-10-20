@@ -291,7 +291,7 @@ with col1:
                     "references": st.session_state.references
                 }
 
-                with st.spinner("俳句を生成中..."):
+with st.spinner("俳句を生成中..."):
     try:
         st.session_state.haiku_data = call_gpt_haiku(payload)
 
