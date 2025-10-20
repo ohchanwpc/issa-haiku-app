@@ -292,17 +292,47 @@ with col1:
                 }
 
                 with st.spinner("俳句を生成中..."):
-                    st.session_state.haiku_data = call_gpt_haiku(payload)
+    try:
+        st.session_state.haiku_data = call_gpt_haiku(payload)
 
-                if st.session_state.haiku_data:
-                    h = st.session_state.haiku_data
-                    st.session_state.image_prompt = build_image_prompt(
-                        haiku_ja=h.get("haiku_ja", ""),
-                        explanation_ja=h.get("explanation_ja", ""),
-                        season=st.session_state.season,
-                        keyword=keyword,
-                        aesthetic=st.session_state.aesthetic
-                    )
+    except Exception as e:
+        import traceback
+        # --- 原因サマリをUIに出す ---
+        resp = getattr(e, "response", None)
+        headers = dict(getattr(resp, "headers", {}) or {}) if resp else {}
+        status = getattr(e, "status_code", None)
+        body_text = getattr(resp, "text", None) if resp else None
+        req_id = headers.get("x-request-id")
+
+        st.error("俳句生成でエラーが発生しました（診断情報）")
+        st.write({
+            "status": status,
+            "x-request-id": req_id,
+            "x-ratelimit-remaining-requests": headers.get("x-ratelimit-remaining-requests"),
+            "x-ratelimit-remaining-tokens":   headers.get("x-ratelimit-remaining-tokens"),
+            "x-ratelimit-reset-requests":     headers.get("x-ratelimit-reset-requests"),
+            "x-ratelimit-reset-tokens":       headers.get("x-ratelimit-reset-tokens"),
+        })
+        if body_text:
+            st.code(body_text[:1200], language="json")  # 本文の先頭だけ表示（長文対策）
+        # 例外の種類だけ（トレース全体はCloudログに任せる）
+        st.code("".join(traceback.format_exception_only(type(e), e)))
+
+        # Cloudログにも流す（診断が済んだらこの raise は外してOK）
+        raise
+
+    else:
+        # --- ここは成功時だけ走る（既存の処理をそのまま残す） ---
+        if st.session_state.haiku_data:
+            h = st.session_state.haiku_data
+            st.session_state.image_prompt = build_image_prompt(
+                haiku_ja=h.get("haiku_ja", ""),
+                explanation_ja=h.get("explanation_ja", ""),
+                season=st.session_state.season,
+                keyword=keyword,
+                aesthetic=st.session_state.aesthetic
+            )
+
         finally:
             st.session_state["busy"] = False  # 実行完了後に解除
 
