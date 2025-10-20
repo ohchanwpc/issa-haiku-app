@@ -163,27 +163,19 @@ def generate_english_tweet_block(haiku_ja: str, explanation_ja: str) -> str:
 俳句の説明（日本語の意訳/背景の要点）:
 {explanation_ja}
 """
-    # ★ ここから再試行付き呼び出し（俳句生成と同じパターン）
-    last_err = None
-    resp = None
-    for attempt in range(5):
-        try:
-            resp = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role":"system","content":system_prompt},
-                          {"role":"user","content":user_prompt}],
-                temperature=0.5,
-                max_completion_tokens=160,  # ← 英訳は短いのでさらに小さく
-            )
-            break
-        except (RateLimitError, APIStatusError) as e:
-            code = getattr(e, "status_code", None)
-            if code in (429, 500, 503) or isinstance(e, RateLimitError):
-                last_err = e
-                logging.warning(f"[Tweet Attempt {attempt+1}] Rate/Server error ({code}). Retrying…")
-                if attempt < 4:
-                    _sleep_backoff(attempt)
-                    continue
-            raise last_err or e
+client = _get_client()
 
-    return resp.choices[0].message.content.strip()
+def _api_call():
+    return client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        temperature=0.5,
+        max_tokens=160,  # 英訳は短め
+    )
+
+resp = _with_backoff(_api_call)
+content = resp.choices[0].message.content.strip()
+return content
