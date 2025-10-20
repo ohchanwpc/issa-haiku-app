@@ -1,109 +1,20 @@
 
-
-# ===== haiku_gpt.py SAFE HEADER =====
-import os
-import time
-import random
-import logging
-import json
-import re
-
-
-
-from openai import OpenAI
-from openai import RateLimitError, APIStatusError
-_call_seq = 0
-def _bump_call_seq(tag: str):
-    # 各呼び出しの通番を出す
-    import time, logging
-    global _call_seq
-    _call_seq += 1
-    logging.warning("[CALL %04d] %s t=%.3f", _call_seq, tag, time.time())
-
-
-logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(levelname)s %(message)s")
+from __future__ import annotations
+import os, re, json, time, random, logging  # ← time, random, loggingを追加
+from openai import OpenAI, RateLimitError, APIStatusError  # ← 例外も追加
 
 _client = None
-
 def _get_client() -> OpenAI:
     global _client
     if _client is None:
-        _client = OpenAI(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            max_retries=0,
-            timeout=60,
-        )
-        key = os.getenv("OPENAI_API_KEY")
-        logging.warning(f"OPENAI_API_KEY head={key[:5]+'…' if key else 'None'}")
+        _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     return _client
 
-def _with_backoff(callable_fn, *, max_attempts=3, base=0.8, cap=8.0):
-    import time, random, logging
-    last_err = None
-    for attempt in range(1, max_attempts + 1):
-        try:
-            return callable_fn()
-        except Exception as e:
-            last_err = e
-            # 共通的に status / headers / body を引き抜く
-            status = getattr(e, "status_code", None)
-            headers = None
-            body_text = None
-            req_id = None
-            try:
-                resp = getattr(e, "response", None)
-                if resp is not None:
-                    headers = dict(getattr(resp, "headers", {}) or {})
-                    body_text = getattr(resp, "text", None)
-                    req_id = headers.get("x-request-id")
-            except Exception:
-                pass
-            logging.error(
-                "[ERR TRY %d/%d] type=%s status=%s req_id=%s headers=%s body=%s",
-                attempt, max_attempts, e.__class__.__name__, status, req_id, headers, body_text
-            )
-            # 429/5xx のときだけ再試行
-            if status not in (429, 500, 502, 503, 504):
-                raise
-        if attempt < max_attempts:
-            sleep = min(cap, base * (2 ** (attempt - 1))) * (0.5 + random.random())
-            logging.warning("Retrying after %.2fs …", sleep)
-            time.sleep(sleep)
-    raise last_err
-
-
-# ===== /SAFE HEADER =====
-def _diag_probe_once():
-    """
-    小さなリクエストを1回だけ送り、レート制限ヘッダをログに出す診断用。
-    本番処理には影響しない。
-    """
-    import logging
-    client = _get_client()
-    # with_raw_response で headers を取得
-    raw = client.with_raw_response.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role":"system","content":"You are a helpful assistant."},
-            {"role":"user","content":"Say 'pong'."},
-        ],
-        max_tokens=5,
-        temperature=0.0,
-    )
-    logging.warning("[DIAG] status=%s headers=%s", raw.status_code, dict(raw.headers or {}))
-    resp = raw.parse()
-    logging.warning("[DIAG] content=%s", resp.choices[0].message.content.strip())
-
-
-
-def call_gpt_haiku(payload: dict, max_retries: int = 5) -> dict:
-    _bump_call_seq("call_gpt_haiku")
-    logging.warning("[CALL] call_gpt_haiku invoked")
+def call_gpt_haiku(payload: dict) -> dict:
     """新作俳句＋意訳＋参照理由をJSONで返す。"""
     client = _get_client()
     refs = payload.get('references', [])
     refs_numbered = "\n".join([f"{i+1}. {r.get('text','')} | 出典: {r.get('source','')}" for i, r in enumerate(refs)])
-
 
     system_prompt = """あなたは「小林一茶 × 新作俳句 × 参照句運用」の専門家です。
 以下のJSONだけを出力してください（余文・解説・前置き禁止）：
@@ -150,25 +61,15 @@ experience = {payload.get('experience')}
 参照俳句（必ず(1)(2)(3)で言及）:
 {refs_numbered}
 """
-    sp_len = len(system_prompt)
-    up_len = len(user_prompt)
-    logging.warning("[PROMPT] system=%d chars, user=%d chars, total=%d", sp_len, up_len, sp_len+up_len)
 
-    # 🧩 API呼び出し部（ここを新しく）
-    def _api_call():
-        return client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=0.7,
-            response_format={"type": "json_object"},
-            max_tokens=220,
-        )
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "system", "content": system_prompt},
+                  {"role": "user", "content": user_prompt}],
+        temperature=0.7,
+        response_format={"type": "json_object"}
+    )
 
-    resp = _with_backoff(_api_call)
-    
     content = resp.choices[0].message.content
     try:
         data = json.loads(content)
@@ -218,24 +119,10 @@ def generate_english_tweet_block(haiku_ja: str, explanation_ja: str) -> str:
 俳句の説明（日本語の意訳/背景の要点）:
 {explanation_ja}
 """
-    client = _get_client()
-
-    # ✅ ここから“関数の中”に置くこと（トップレベルに出さない）
-    def _api_call():
-        return client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=0.7,
-            response_format={"type": "json_object"},
-            max_tokens=220,
-        )
-
-    try:
-        resp = _with_backoff(_api_call)
-    except Exception:
-        logging.exception("[call_gpt_haiku] failed")
-        raise
-
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role":"system","content":system_prompt},
+                  {"role":"user","content":user_prompt}],
+        temperature=0.5,
+    )
+    return resp.choices[0].message.content.strip()
