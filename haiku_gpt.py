@@ -171,21 +171,21 @@ def generate_english_tweet_block(haiku_ja: str, explanation_ja: str) -> str:
 """
 client = _get_client()
 
-    def _api_call():
-        return client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=0.7,
-            response_format={"type": "json_object"},
-            max_tokens=220,
-        )
+def _api_call():
+    return client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        temperature=0.7,
+        response_format={"type": "json_object"},
+        max_tokens=220,
+    )
 
-    try:
-        resp = _with_backoff(_api_call)
-    except Exception:
-        logging.exception("[call_gpt_haiku] failed")
-        raise
+try:
+    resp = _with_backoff(_api_call)
+except Exception:
+    logging.exception("[call_gpt_haiku] failed")
+    raise
 
