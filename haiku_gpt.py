@@ -5,6 +5,8 @@ import os
 import time
 import random
 import logging
+import json
+
 
 from openai import OpenAI
 from openai import RateLimitError, APIStatusError
