@@ -1,4 +1,4 @@
-logging.warning("[CALL] call_gpt_haiku invoked")
+
 
 # ===== haiku_gpt.py SAFE HEADER =====
 import os
@@ -8,6 +8,7 @@ import logging
 
 from openai import OpenAI
 from openai import RateLimitError, APIStatusError
+
 
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -83,6 +84,7 @@ def _diag_probe_once():
 
 
 def call_gpt_haiku(payload: dict, max_retries: int = 5) -> dict:
+    logging.warning("[CALL] call_gpt_haiku invoked")
     """新作俳句＋意訳＋参照理由をJSONで返す。"""
     client = _get_client()
     refs = payload.get('references', [])
