@@ -70,8 +70,11 @@ def build_image_prompt(haiku_ja: str, explanation_ja: str, season: str, keyword:
 
     motif = random.choice(ukiyo_elements)
 
-    prompt = f"""IMPORTANT: The main subject must be the landscape itself, not people.
-Humans, if included, appear as tiny silhouettes far away (less than 3% of image height, under 1/25 of total area).
+    prompt = f"""IMPORTANT HARD RULES:
+- The main subject MUST be the landscape, NOT people.
+- No foreground or midground people. If any human figures exist, place them near the horizon as tiny silhouettes.
+- Maximum figure size: <= 20 pixels tall on a 1024×1024 image (≈ <2% height), total area under 1/50.
+- Camera: high vantage point / bird's-eye feeling so the scene looks vast.
 Masterpiece in the style of Utagawa Hiroshige (1797–1858),
 renowned for poetic landscapes and dramatic perspective.
 Edo-period {season_en} ukiyo-e woodblock print.
@@ -87,9 +90,9 @@ Keyword (seasonal word or theme): {keyword}
 - Mood: calm, poetic, and vast; evoke serenity and awe before nature’s scale.
   The presence of human life is felt only faintly, not seen closely.
 
-- Technique: depict people as distant travelers or tiny silhouettes that harmonize with the scenery.
-  Apply Hiroshige’s signature indigo (Prussian blue) gradients and fading tones toward the horizon.
-  Mimic woodblock textures and clean linework; preserve generous negative space.
+- Technique: if humans appear, render as tiny distant silhouettes with no facial features,
+  harmonizing with the scenery. Apply Hiroshige’s indigo (Prussian blue) gradients and fading tones.
+  Mimic woodblock textures and generous negative space.
 - Aspect ratio: square (1:1) for NFT format.
 - Strict bans: no text, no Western realism, no oil painting, no 3D, no modern objects, no close-up bridges or torii gates.
 """
