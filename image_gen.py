@@ -76,9 +76,9 @@ Edo-period {season_en} ukiyo-e woodblock print.
 Haiku: {haiku_ja}
 Explanation: {explanation_ja}
 Keyword (seasonal word or theme): {keyword}
-{aesthetic_line}- Composition: dynamic diagonal layout and deep perspective, typical of Hiroshige’s landscapes.
-  Vast natural scenery as the main subject, with small human or animal figures (<=1/10 of the scene).
-  Distant mountains and flowing rivers should convey atmospheric depth.;
+{aesthetic_line}- Composition: sweeping landscape dominates the frame, with humans or animals appearing very small in the distance (less than 1/15 of the scene).
+  Use dynamic diagonal layout and deep atmospheric perspective typical of Utagawa Hiroshige.
+  Emphasize the natural environment—mountains, river, and sky—occupying most of the composition.;
   include {motif}.
 - Colors: signature Hiroshige indigo and Prussian blue gradients,
   soft browns and greens, subtle use of vermilion in details.
