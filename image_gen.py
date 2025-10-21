@@ -36,9 +36,14 @@ Edo-period {season_en} ukiyo-e woodblock print.
 Haiku: {haiku_ja}
 Explanation: {explanation_ja}
 Keyword (seasonal word or theme): {keyword}
-{aesthetic_line}- Composition: vast nature as main subject; small human/animal figures (<=1/10 of scene); avoid bridges and torii gates; include {motif}.
-- Colors: indigo gradients (aizuri-e), soft browns/greens, washi paper texture; subtle gold accents if sunlight/dawn.
-- Mood: poetic, tranquil, simple. Reflect "yugen", "sabi", "aware".
+{aesthetic_line}- Composition: dynamic diagonal layout and deep perspective;
+  distant mountains and flowing rivers depicted with atmospheric depth;
+  include {motif}.
+- Colors: signature Hiroshige indigo and Prussian blue gradients,
+  soft browns and greens, subtle use of vermilion in details.
+- Mood: tranquil yet emotional; evoke “sabi” and “aware”.
+- Technique: mimic woodblock texture and fine brush outlines;
+  imitate Hiroshige’s use of negative space and fading horizon.
 - Aspect ratio: square (1:1) for NFT format.
 - Strict bans: no text, no Western realism, no oil painting, no 3D, no modern objects, no close-up bridges or torii gates.
 """
