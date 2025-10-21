@@ -204,7 +204,7 @@ prioritize_giongo = st.checkbox(
 
 
 
-if st.button("ステップ7: 条件を確定（参照句を確定）"):
+if st.button("ステップ7: 条件を確定（📚参照句を確定）"):
     df = load_haiku_df(ISSA_CSV_PATH)
     st.session_state.references = pick_references(
         df,
@@ -222,7 +222,7 @@ if st.button("ステップ7: 条件を確定（参照句を確定）"):
 
 
 # 参照句プレビュー
-with st.expander("📚 参照句（小林一茶の俳句から選定条件を元に抽出された参照句です。）", expanded=False):
+with st.expander("📚 参照句（小林一茶の俳句から選定条件を元に抽出された参照句です。🎵は擬音語が含まれます）", expanded=False):
     if st.session_state.references_locked and st.session_state.references:
         import pandas as pd
         ref_df = pd.DataFrame(st.session_state.references).rename(columns={
