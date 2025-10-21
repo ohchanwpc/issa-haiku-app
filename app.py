@@ -190,7 +190,21 @@ textarea {
 st.markdown(CSS_GLOBAL, unsafe_allow_html=True)
 
 
-st.markdown('<p class="step-label">ステップ4: キーワード（例：川、家族、影）を入力してください</p>', unsafe_allow_html=True)
+# ===== ステップ4: キーワード入力 =====
+st.markdown(
+    """
+    <p class="step-label">
+    ステップ4: キーワード（例：川、家族、影）を入力してください
+    </p>
+    <small style="color: #666;">
+    ※ 一茶の約2.2万句から検索するため、
+    <b>「単語」入力のほうが多くの俳句がヒットします。</b><br>
+    （文章を入れると条件に合う句が少なくなる場合があります）
+    </small>
+    """,
+    unsafe_allow_html=True
+)
+
 keyword = st.text_input("", value="焼きいも")
 
 st.markdown('<p class="step-label">ステップ5: あなたの体験・感情を入力してください</p>', unsafe_allow_html=True)
