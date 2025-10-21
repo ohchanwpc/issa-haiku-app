@@ -76,15 +76,16 @@ Edo-period {season_en} ukiyo-e woodblock print.
 Haiku: {haiku_ja}
 Explanation: {explanation_ja}
 Keyword (seasonal word or theme): {keyword}
-{aesthetic_line}- Composition: sweeping landscape dominates the frame, with humans or animals appearing very small in the distance (less than 1/15 of the scene).
-  Use dynamic diagonal layout and deep atmospheric perspective typical of Utagawa Hiroshige.
-  Emphasize the natural environment—mountains, river, and sky—occupying most of the composition.;
-  include {motif}.
-- Colors: signature Hiroshige indigo and Prussian blue gradients,
-  soft browns and greens, subtle use of vermilion in details.
-- Mood: tranquil yet emotional; evoke “sabi” and “aware”.
-- Technique: mimic woodblock texture and fine brush outlines;
-  imitate Hiroshige’s use of negative space and fading horizon.
+{aesthetic_line}- Composition: sweeping landscape fills the majority of the frame.
+  Humans or animals should appear extremely small and distant—tiny silhouettes (less than 1/20 of the scene)—
+  emphasizing the vastness of nature. 
+  Use dynamic diagonal layout and deep atmospheric perspective, in the manner of Utagawa Hiroshige’s landscapes.
+  The horizon and flowing elements (rivers, hills, bridges, or coastlines) should draw the viewer’s eye into the distance.
+
+- Mood: evoke a sense of serenity and awe before nature’s scale; the viewer should feel the quiet presence of life within a grand scene.
+
+- Technique: depict people as small silhouettes or travelers far away, harmonizing with the landscape rather than standing out.
+  Apply the traditional Hiroshige indigo gradients and fading tones toward the horizon.
 - Aspect ratio: square (1:1) for NFT format.
 - Strict bans: no text, no Western realism, no oil painting, no 3D, no modern objects, no close-up bridges or torii gates.
 """
