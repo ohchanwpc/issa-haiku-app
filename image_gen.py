@@ -70,22 +70,26 @@ def build_image_prompt(haiku_ja: str, explanation_ja: str, season: str, keyword:
 
     motif = random.choice(ukiyo_elements)
 
-    prompt = f"""Masterpiece in the style of Utagawa Hiroshige (1797–1858),
+    prompt = f"""IMPORTANT: The main subject must be the landscape itself, not people.
+Humans, if included, appear as tiny silhouettes far away (less than 3% of image height, under 1/25 of total area).
+Masterpiece in the style of Utagawa Hiroshige (1797–1858),
 renowned for poetic landscapes and dramatic perspective.
 Edo-period {season_en} ukiyo-e woodblock print.
 Haiku: {haiku_ja}
 Explanation: {explanation_ja}
 Keyword (seasonal word or theme): {keyword}
 {aesthetic_line}- Composition: sweeping landscape fills the majority of the frame.
-  Humans or animals should appear extremely small and distant—tiny silhouettes (less than 1/20 of the scene)—
+  Humans or animals should appear extremely small and distant—tiny silhouettes—
   emphasizing the vastness of nature. 
   Use dynamic diagonal layout and deep atmospheric perspective, in the manner of Utagawa Hiroshige’s landscapes.
   The horizon and flowing elements (rivers, hills, bridges, or coastlines) should draw the viewer’s eye into the distance.
 
-- Mood: evoke a sense of serenity and awe before nature’s scale; the viewer should feel the quiet presence of life within a grand scene.
+- Mood: calm, poetic, and vast; evoke serenity and awe before nature’s scale.
+  The presence of human life is felt only faintly, not seen closely.
 
-- Technique: depict people as small silhouettes or travelers far away, harmonizing with the landscape rather than standing out.
-  Apply the traditional Hiroshige indigo gradients and fading tones toward the horizon.
+- Technique: depict people as distant travelers or tiny silhouettes that harmonize with the scenery.
+  Apply Hiroshige’s signature indigo (Prussian blue) gradients and fading tones toward the horizon.
+  Mimic woodblock textures and clean linework; preserve generous negative space.
 - Aspect ratio: square (1:1) for NFT format.
 - Strict bans: no text, no Western realism, no oil painting, no 3D, no modern objects, no close-up bridges or torii gates.
 """
