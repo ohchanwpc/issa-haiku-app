@@ -222,7 +222,7 @@ if st.button("ステップ7: 条件を確定（📚参照句を確定）"):
 
 
 # 参照句プレビュー
-with st.expander("📚 一茶の句からAIが選んだ参考句。🎵＝擬音語入り）", expanded=False):
+with st.expander("📚 一茶の句からAIが選んだ参照句。🎵＝擬音語入り）", expanded=False):
     if st.session_state.references_locked and st.session_state.references:
         import pandas as pd
         ref_df = pd.DataFrame(st.session_state.references).rename(columns={
