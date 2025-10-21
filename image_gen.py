@@ -18,55 +18,55 @@ def build_image_prompt(haiku_ja: str, explanation_ja: str, season: str, keyword:
     import random
     season_en = {"春":"spring","夏":"summer","秋":"autumn","冬":"winter","新年":"new year","無季":"seasonless"}.get(season,"seasonal")
     aesthetic_line = "" if aesthetic == "スキップ" else f"Japanese aesthetic: {aesthetic}\n"
-ukiyo_elements = [
-    # ── 空・天候・光 ──
-    "evening squall over rice paddies", "drizzle under paper umbrellas", "sudden downpour with gusting wind",
-    "rainbow after storm over village", "low winter sun casting long shadows", "hazy spring dawn over fields",
-    "morning fog drifting across river", "glow of sunset behind distant hills", "stars faint over quiet bay",
-    "first frost shimmering on grass", "thin crescent moon above shoreline", "mist lifting from cedar forest",
-
-    # ── 水辺・海・川 ──
-    "boats moored at a quiet inlet", "ferry crossing slow broad river", "cormorant fishing at night with torch",
-    "waves cresting against rocky coast", "tidal flats with people gathering shells", "seaweed drying on wooden racks",
-    "quiet canal reflecting willows", "carp circling in a garden pond", "salt fields glistening under sun",
-
-    # ── 山・野・道（山だけに偏らない要素多め）──
-    "terraced rice fields layered like steps", "footpath winding through tea plantations",
-    "country road lined with thatched hedges", "stone milestone on an old post road",
-    "wind through tall pampas grass", "persimmon trees heavy with fruit", "scarecrow standing in harvested field",
-    "cedar avenue leading to a distant shrine", "bamboo grove whispering in afternoon breeze",
-    "mossy stepping stones after rain",
-
-    # ── 集落・建物・暮らし ──
-    "thatched farmhouse with smoking hearth", "paper lanterns at a rustic wayside tea house",
-    "engawa veranda with shoji glow", "woodcutters stacking fresh logs", "women rinsing cloth at river shallows",
-    "rice sheaves drying on racks", "charcoal burners’ hut at forest edge", "sake brewery barrels by roadside",
-    "street market at early morning", "silk cocoons drying on trays",
-
-    # ── 季の行事・道具 ──
-    "fireworks over summer river", "dragonfly kites in high wind", "children spinning tops on packed earth",
-    "paper wind chimes tinkling at eaves", "straw raincoats and sedge hats hung to dry", "bonfire of fallen leaves",
-    "mochi pounding with wooden mallets", "chestnuts roasting over a brazier", "New Year pine decorations at gate",
-
-    # ── 樹木・花 ──
-    "plum blossoms by a rustic gate", "cherry petals drifting along stream", "red maples arching over path",
-    "camellias blooming in winter shade", "wild chrysanthemums by stone wall", "lotus leaves spreading on quiet pond",
-
-    # ── 鳥獣・生き物 ──
-    "swallows darting under the eaves", "sparrows perched on reed stalks", "herons standing in shallow water",
-    "wild geese flying south in V-shape", "deer beneath autumn maples", "fox slipping along the roadside",
-    "monkeys chattering in chestnut trees", "fireflies floating over stream", "dragonflies skimming paddy water",
-    "cranes gliding over tidal shallows",
-
-    # ── 旅・人の動き ──
-    "pilgrims passing with walking staves", "palanquin bearers resting by pine",
-    "porters crossing a shallow ford", "fishermen mending nets on the shore", "itinerant monk in straw hat playing flute",
-    "mail runner speeding along post road",
-
-    # ── 既存の人気モチーフ（頻度を下げるなら後方に）──
-    "Mount Fuji in distance", "bridge seen from afar in morning mist",
-    "mountain village under falling snow"
-]
+    ukiyo_elements = [
+        # ── 空・天候・光 ──
+        "evening squall over rice paddies", "drizzle under paper umbrellas", "sudden downpour with gusting wind",
+        "rainbow after storm over village", "low winter sun casting long shadows", "hazy spring dawn over fields",
+        "morning fog drifting across river", "glow of sunset behind distant hills", "stars faint over quiet bay",
+        "first frost shimmering on grass", "thin crescent moon above shoreline", "mist lifting from cedar forest",
+    
+        # ── 水辺・海・川 ──
+        "boats moored at a quiet inlet", "ferry crossing slow broad river", "cormorant fishing at night with torch",
+        "waves cresting against rocky coast", "tidal flats with people gathering shells", "seaweed drying on wooden racks",
+        "quiet canal reflecting willows", "carp circling in a garden pond", "salt fields glistening under sun",
+    
+        # ── 山・野・道（山だけに偏らない要素多め）──
+        "terraced rice fields layered like steps", "footpath winding through tea plantations",
+        "country road lined with thatched hedges", "stone milestone on an old post road",
+        "wind through tall pampas grass", "persimmon trees heavy with fruit", "scarecrow standing in harvested field",
+        "cedar avenue leading to a distant shrine", "bamboo grove whispering in afternoon breeze",
+        "mossy stepping stones after rain",
+    
+        # ── 集落・建物・暮らし ──
+        "thatched farmhouse with smoking hearth", "paper lanterns at a rustic wayside tea house",
+        "engawa veranda with shoji glow", "woodcutters stacking fresh logs", "women rinsing cloth at river shallows",
+        "rice sheaves drying on racks", "charcoal burners’ hut at forest edge", "sake brewery barrels by roadside",
+        "street market at early morning", "silk cocoons drying on trays",
+    
+        # ── 季の行事・道具 ──
+        "fireworks over summer river", "dragonfly kites in high wind", "children spinning tops on packed earth",
+        "paper wind chimes tinkling at eaves", "straw raincoats and sedge hats hung to dry", "bonfire of fallen leaves",
+        "mochi pounding with wooden mallets", "chestnuts roasting over a brazier", "New Year pine decorations at gate",
+    
+        # ── 樹木・花 ──
+        "plum blossoms by a rustic gate", "cherry petals drifting along stream", "red maples arching over path",
+        "camellias blooming in winter shade", "wild chrysanthemums by stone wall", "lotus leaves spreading on quiet pond",
+    
+        # ── 鳥獣・生き物 ──
+        "swallows darting under the eaves", "sparrows perched on reed stalks", "herons standing in shallow water",
+        "wild geese flying south in V-shape", "deer beneath autumn maples", "fox slipping along the roadside",
+        "monkeys chattering in chestnut trees", "fireflies floating over stream", "dragonflies skimming paddy water",
+        "cranes gliding over tidal shallows",
+    
+        # ── 旅・人の動き ──
+        "pilgrims passing with walking staves", "palanquin bearers resting by pine",
+        "porters crossing a shallow ford", "fishermen mending nets on the shore", "itinerant monk in straw hat playing flute",
+        "mail runner speeding along post road",
+    
+        # ── 既存の人気モチーフ（頻度を下げるなら後方に）──
+        "Mount Fuji in distance", "bridge seen from afar in morning mist",
+        "mountain village under falling snow"
+    ]
 
     motif = random.choice(ukiyo_elements)
 
