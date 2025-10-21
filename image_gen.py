@@ -74,7 +74,7 @@ def build_image_prompt(haiku_ja: str, explanation_ja: str, season: str, keyword:
 - The main subject MUST be the landscape, NOT people.
 - No foreground or midground people. 
 - Maximum figure size: <= 50 pixels tall on a 1024×1024 image (≈ <5% height), total area under 1/20.
-- Camera: high vantage point / bird's-eye feeling so the scene looks vast.
+- Camera: vast nature as main subject.
 Masterpiece in the style of Utagawa Hiroshige (1797–1858),
 renowned for poetic landscapes and dramatic perspective.
 Edo-period {season_en} ukiyo-e woodblock print.
