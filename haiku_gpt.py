@@ -230,7 +230,7 @@ resp = _retry_call(
     )
 )  # ← create(...) を閉じる ')' と、_retry_call( を閉じる ')' の2つでクローズ
 
-    content = resp.choices[0].message.content
+content = resp.choices[0].message.content
     try:
         data = json.loads(content)
     except json.JSONDecodeError:
