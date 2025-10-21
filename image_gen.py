@@ -85,7 +85,7 @@ Keyword (seasonal word or theme): {keyword}
   + Humans or animals appear small and secondary—midground scale—
   emphasizing the vastness of nature. 
   Use dynamic diagonal layout and deep atmospheric perspective, in the manner of Utagawa Hiroshige’s landscapes.
-  The horizon and flowing elements (rivers, hills, bridges, or coastlines) should draw the viewer’s eye into the distance.
+  Use leading lines (paths, streets, rooftops, rows of trees, temple approaches, or shorelines) to guide the viewer’s eye naturally into the depth of the scene.
 
 - Mood: calm, poetic, and vast; evoke serenity and awe before nature’s scale.
   The presence of human life is felt only faintly, not seen closely.
