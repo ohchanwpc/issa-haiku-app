@@ -1,11 +1,10 @@
-
 # --- haiku_gpt.py (先頭付近) ---
 from __future__ import annotations
-import os, re, json, time, random, logging  # ← 既存のままOK
-from openai import OpenAI, RateLimitError, APIStatusError  # ← 既存のままOK
-from typing import Optional, Dict, Any, Callable  # ← 追加
+import os, re, json, time, random, logging
+from openai import OpenAI, RateLimitError, APIStatusError
+from typing import Optional, Dict, Any, Callable
 
-# ===== ロギング設定（既存の設定があれば邪魔しない）=====
+# ===== ロギング設定 =====
 _logger = logging.getLogger("haiku_gpt")
 if not _logger.handlers:
     _handler = logging.StreamHandler()
@@ -15,27 +14,83 @@ if not _logger.handlers:
 
 last_call_meta: Optional[Dict[str, Any]] = None
 
-def _retry_call(
-    fn: Callable[[], Any],  # ← ついでに型ヒントも互換的に
-    *,
-    max_tries: int = 5,
-    base: float = 0.8,
-    cap: float = 8.0
-):
-    
-def _extract_request_id(err: Exception) -> str | None:
+
+def _extract_request_id(err: Exception) -> Optional[str]:
     """
     OpenAIの例外から request_id を可能なら取得（無ければ None）
     """
     try:
         resp = getattr(err, "response", None)
-        # SDK により response.request_id or resp.headers.get("x-request-id") など
         req_id = getattr(resp, "request_id", None)
         if not req_id and hasattr(resp, "headers"):
             req_id = resp.headers.get("x-request-id")
         return req_id
     except Exception:
         return None
+
+
+def _retry_call(
+    fn: Callable[[], Any],
+    *,
+    max_tries: int = 5,
+    base: float = 0.8,
+    cap: float = 8.0
+):
+    """
+    OpenAI呼び出しを指数バックオフ＋ジッターで再試行。
+    呼び出し側の挙動を壊さないため、成功時はそのまま結果を返し、
+    失敗時は例外を再送出。メタ情報は last_call_meta に保存。
+    """
+    global last_call_meta
+    tries, start = 0, time.time()
+    while True:
+        try:
+            result = fn()
+            last_call_meta = {
+                "ok": True,
+                "tries": tries + 1,
+                "elapsed_sec": round(time.time() - start, 3),
+                "error": None,
+                "ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            _logger.info(f"OpenAI call OK (tries={tries+1}, {last_call_meta['elapsed_sec']}s)")
+            return result
+        except (RateLimitError, APIStatusError) as e:
+            tries += 1
+            if tries < max_tries:
+                sleep = min(cap, base * (2 ** (tries - 1))) + random.uniform(0, 0.4)
+                _logger.warning(
+                    f"{e.__class__.__name__} (req_id={_extract_request_id(e)}) → retry {tries}/{max_tries} in {sleep:.1f}s"
+                )
+                time.sleep(sleep)
+                continue
+            last_call_meta = {
+                "ok": False,
+                "tries": tries,
+                "elapsed_sec": round(time.time() - start, 3),
+                "error": {
+                    "type": e.__class__.__name__,
+                    "msg": str(e),
+                    "request_id": _extract_request_id(e),
+                },
+                "ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            _logger.error(f"OpenAI call failed after {tries} tries (req_id={_extract_request_id(e)}): {e}")
+            raise
+        except Exception as e:
+            last_call_meta = {
+                "ok": False,
+                "tries": tries + 1,
+                "elapsed_sec": round(time.time() - start, 3),
+                "error": {
+                    "type": e.__class__.__name__,
+                    "msg": str(e),
+                    "request_id": None,
+                },
+                "ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            _logger.exception(f"Unexpected error during OpenAI call: {e}")
+            raise
 
 def _retry_call(fn, *, max_tries: int = 5, base: float = 0.8, cap: float = 8.0):
     """
