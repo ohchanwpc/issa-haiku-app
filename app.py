@@ -172,7 +172,7 @@ CSS_GLOBAL = """
 .step-label {
     font-size: 14px !important;      /* ステップ1と同じサイズ */
     font-weight: 400 !important;     /* 標準の太さ */
-    margin-top: 0.8em !important;
+    margin-top: -2em !important;
     margin-bottom: -1em !important; /* ←ここを微調整 */
 }
 
