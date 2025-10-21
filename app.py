@@ -441,19 +441,20 @@ if "auto_sync_layout" not in st.session_state:
     st.session_state.auto_sync_layout = True
 
 def build_directives(haiku_en, anchor_text, inset_pct, min_bottom_px, line_spacing):
-    return f"""Typeset the following English haiku **inside the existing artwork** (no bands, no extra margins, no canvas expansion).
-Use Allura font; if unavailable, use a similar elegant script. Keep exact line breaks; no quotes, no extra text:
+    return f"""以下の英語俳句を**既存のアートワークの中に直接配置**してください（帯・余白の追加やキャンバス拡張は禁止）。
+フォントは Allura を使用し、なければ似た優雅なスクリプト体を使用してください。
+改行位置はそのまま保持し、引用符や余分な文字を入れないでください：:
 {haiku_en}
 
-Layout constraints (important):
-- Do not add any translucent band, shape, or new margins.
-- Place the poem at the {anchor_text} area of the scene.
-- Respect a safe inset of {inset_pct}% from all edges; no glyph may touch or cross the edges.
-- Keep the text baseline at least {min_bottom_px}px above the bottom edge (on a 1024×1024 canvas).
-- If there is any risk of clipping, automatically reduce the font size and increase line spacing to about {line_spacing}×.
-- Apply a subtle shadow or thin outline for legibility, but keep it unobtrusive.
-- Preserve the ukiyo-e look-and-feel; do not alter the scene except placing the text.
-- Final output must be exactly 1024×1024."""
+レイアウト条件（重要）：
+- 半透明の帯や図形、新しい余白を追加しないこと。
+- 詩はシーンの{anchor_text}エリアに配置すること。
+- すべての端から{inset_pct}%の安全インセットを確保し、文字が端に触れたりはみ出したりしないようにする。
+- テキストのベースラインを（1024×1024キャンバス上で）下端から少なくとも{min_bottom_px}px上に保つこと。
+- 文字が切れる可能性がある場合は、自動的にフォントサイズを小さくし、行間を約{line_spacing}倍にする。
+- 読みやすさのために控えめな影または細い縁取りを適用するが、目立ちすぎないようにする。
+- 浮世絵の雰囲気を損なわないよう、テキスト配置以外の要素は変更しないこと。
+- 最終出力は必ず1024×1024にすること。"""
 
 # 初期のレイアウト指示
 if "remix_directives_area" not in st.session_state:
