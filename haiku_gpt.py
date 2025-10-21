@@ -218,41 +218,52 @@ experience = {payload.get('experience')}
 """
 
 # 例）call_gpt_haiku 内の呼び出し部（問題行まわりを置き換え）
-resp = _retry_call(
-    lambda: client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        temperature=0.7,
-        response_format={"type": "json_object"},
+    resp = _retry_call(
+        lambda: client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.7,
+            response_format={"type": "json_object"},
+        )
     )
-)  # ← create(...) を閉じる ')' と、_retry_call( を閉じる ')' の2つでクローズ
 
-content = resp.choices[0].message.content
-try:
-    data = json.loads(content)
-except json.JSONDecodeError:
-    s = content.strip()
-    if s.startswith("```"):
-        s = re.sub(r"^```[a-zA-Z]*\n?", "", s)
-        s = re.sub(r"\n?```$", "", s)
-    start = s.find("{"); end = s.rfind("}")
-    if start != -1 and end != -1 and end > start:
-        s = s[start:end+1]
-    s = s.replace("“", '"').replace("”", '"').replace("’", "'")
-    s = re.sub(r",(\s*[\]}])", r"\1", s)
-    s = re.sub(r"'([A-Za-z0-9_]+)'\s*:", r'"\1":', s)
-    s = re.sub(r":\s*'([^']*)'", lambda m: ':"{}"'.format(m.group(1).replace('"', '\\"')), s)
+    content = resp.choices[0].message.content
     try:
-        data = json.loads(s)
+        data = json.loads(content)
     except json.JSONDecodeError:
-        data = {"haiku_ja": "", "explanation_ja": "", "reasons_refs_ja": "", "references_numbered": refs_numbered}
+        s = content.strip()
+        if s.startswith("```"):
+            s = re.sub(r"^```[a-zA-Z]*\n?", "", s)
+            s = re.sub(r"\n?```$", "", s)
+        start = s.find("{"); end = s.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            s = s[start:end+1]
+        s = s.replace("“", '"').replace("”", '"').replace("’", "'")
+        s = re.sub(r",(\s*[\]}])", r"\1", s)
+        s = re.sub(r"'([A-Za-z0-9_]+)'\s*:", r'"\1":', s)
+        s = re.sub(
+            r":\s*'([^']*)'",
+            lambda m: ':"{}"'.format(m.group(1).replace('"', '\\"')),
+            s
+        )
+        try:
+            data = json.loads(s)
+        except json.JSONDecodeError:
+            data = {
+                "haiku_ja": "",
+                "explanation_ja": "",
+                "reasons_refs_ja": "",
+                "references_numbered": refs_numbered,
+            }
 
-for k in ["haiku_ja", "explanation_ja", "reasons_refs_ja", "references_numbered"]:
-    data.setdefault(k, "")
-return data
+    # ← このfor文とreturnが関数内の同じインデントであること！
+    for k in ["haiku_ja", "explanation_ja", "reasons_refs_ja", "references_numbered"]:
+        data.setdefault(k, "")
+
+    return data
 
 def generate_english_tweet_block(haiku_ja: str, explanation_ja: str) -> str:
     """日本語俳句＋説明から X 向け英語ブロックを生成"""
