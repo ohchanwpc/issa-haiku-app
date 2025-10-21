@@ -196,14 +196,15 @@ st.markdown(
     <p class="step-label">
     ステップ4: キーワード（例：川、家族、影）を入力してください
     </p>
-    <small style="color: #666;">
+    <div style="margin-top: 1.2em; color: #666; font-size: 13px; line-height: 1.5;">
     ※ 一茶の約2.2万句から検索するため、
     <b>「単語」入力のほうが多くの俳句がヒットします。</b><br>
     （文章を入れると条件に合う句が少なくなる場合があります）
-    </small>
+    </div>
     """,
     unsafe_allow_html=True
 )
+
 
 keyword = st.text_input("", value="焼きいも")
 
