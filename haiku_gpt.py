@@ -217,13 +217,18 @@ experience = {payload.get('experience')}
 {refs_numbered}
 """
 
-    resp = _retry_call(lambda: client.chat.completions.create(
+# 例）call_gpt_haiku 内の呼び出し部（問題行まわりを置き換え）
+resp = _retry_call(
+    lambda: client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "system", "content": system_prompt},
-                  {"role": "user", "content": user_prompt}],
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
         temperature=0.7,
-        response_format={"type": "json_object"}
+        response_format={"type": "json_object"},
     )
+)  # ← create(...) を閉じる ')' と、_retry_call( を閉じる ')' の2つでクローズ
 
     content = resp.choices[0].message.content
     try:
