@@ -208,7 +208,14 @@ st.markdown(
 keyword = st.text_input("", value="焼きいも")
 
 
-st.markdown('<p class="step-label">ステップ5: あなたの体験・感情を入力してください</p>', unsafe_allow_html=True)
+st.markdown(
+    """
+    <p class="step-label" style="margin-top: 1.2em !important; margin-bottom: -0.3em !important;">
+    ステップ5: あなたの体験・感情を入力してください
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 experience = st.text_area("", value="夕暮れ、道端の屋台から甘い煙が立ちのぼる。手の中の温もりが、季節の冷たさをやさしく包んだ。")
 
 # ===== ステップ6: 擬音語優先チェック =====
