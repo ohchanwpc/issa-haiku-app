@@ -208,14 +208,24 @@ st.markdown(
 keyword = st.text_input("", value="焼きいも")
 
 
+# 💡 ステップ5だけ別クラスを使用
 st.markdown(
     """
-    <p class="step-label" style="margin-top: 1.2em !important; margin-bottom: -10em !important;">
+    <style>
+    .step-label-5 {
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        margin-top: 1.2em !important;    /* ← ここで自由に調整OK */
+        margin-bottom: -0.3em !important;
+    }
+    </style>
+    <p class="step-label-5">
     ステップ5: あなたの体験・感情を入力してください
     </p>
     """,
     unsafe_allow_html=True
 )
+
 experience = st.text_area("", value="夕暮れ、道端の屋台から甘い煙が立ちのぼる。手の中の温もりが、季節の冷たさをやさしく包んだ。")
 
 # ===== ステップ6: 擬音語優先チェック =====
