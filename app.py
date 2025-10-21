@@ -121,7 +121,7 @@ st.session_state.season = st.radio(
 
 # ===== ステップ2: 表現したい感情を選択 =====
 if "plutchik" not in st.session_state:
-    st.session_state.plutchik = "喜び"
+    st.session_state.plutchik = "悲しみ"
 
 st.session_state.plutchik = st.radio(
     "ステップ2: 表現したい感情を選択してください",
@@ -132,7 +132,7 @@ st.session_state.plutchik = st.radio(
 
 # ===== ステップ3: 日本的情緒を選択（フォームの外で即時更新） =====
 if "aesthetic" not in st.session_state:
-    st.session_state.aesthetic = "素朴"
+    st.session_state.aesthetic = "無常"
 
 st.session_state.aesthetic = st.selectbox(
     "ステップ3: 俳句に含めたい日本的情緒を選択してください",
@@ -205,7 +205,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-keyword = st.text_input("", value="焼きいも")
+keyword = st.text_input("", value="道")
 
 
 # 💡 ステップ5だけ別クラスを使用
@@ -226,7 +226,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-experience = st.text_area("", value="夕暮れ、道端の屋台から甘い煙が立ちのぼる。手の中の温もりが、季節の冷たさをやさしく包んだ。")
+experience = st.text_area("", value="紅葉の葉が濡れて貼りつく、土の道。通り過ぎる足跡が、少しずつ雨に消えていった。")
 
 # ===== ステップ6: 擬音語優先チェック =====
 prioritize_giongo = st.checkbox(
