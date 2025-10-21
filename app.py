@@ -421,13 +421,13 @@ haiku_en = extract_haiku_en_from_block(twitter_block).strip() or \
 
 # --- 初期化（session_state を唯一の真実に） ---
 POS_ANCHOR_TEXT = {
-    "下部中央": "bottom-center",
-    "右下":     "bottom-right",
-    "左下":     "bottom-left",
-    "中央":     "center",
-    "右上":     "top-right",
-    "左上":     "top-left",
-    "上部中央": "top-center"
+    "下部中央": "下部中央",
+    "右下": "右下",
+    "左下": "左下",
+    "中央": "中央",
+    "右上": "右上",
+    "左上": "左上",
+    "上部中央": "上部中央"
 }
 if "pos_choice" not in st.session_state:
     st.session_state.pos_choice = "下部中央"
@@ -460,11 +460,12 @@ def build_directives(haiku_en, anchor_text, inset_pct, min_bottom_px, line_spaci
 if "remix_directives_area" not in st.session_state:
     st.session_state.remix_directives_area = build_directives(
         haiku_en,
-        POS_ANCHOR_TEXT[st.session_state.pos_choice],
+        POS_ANCHOR_TEXT_JA[st.session_state.pos_choice],
         st.session_state.inset_pct,
         st.session_state.min_bottom_px,
         st.session_state.line_spacing,
     )
+
 
 if base_img is None:
     st.info("まず②で画像を生成してください。")
