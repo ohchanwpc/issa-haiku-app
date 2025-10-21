@@ -474,11 +474,12 @@ def build_directives(haiku_en, anchor_text, inset_pct, min_bottom_px, line_spaci
 if "remix_directives_area" not in st.session_state:
     st.session_state.remix_directives_area = build_directives(
         haiku_en,
-        POS_ANCHOR_TEXT_JA[st.session_state.pos_choice],
+        st.session_state.pos_choice,  # ← ここを直接渡す
         st.session_state.inset_pct,
         st.session_state.min_bottom_px,
         st.session_state.line_spacing,
     )
+
 
 
 if base_img is None:
