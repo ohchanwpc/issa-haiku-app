@@ -216,7 +216,7 @@ st.markdown(
         font-size: 14px !important;
         font-weight: 400 !important;
         margin-top: 1.2em !important;    /* ← ここで自由に調整OK */
-        margin-bottom: -0.3em !important;
+        margin-bottom: -2em !important;
     }
     </style>
     <p class="step-label-5">
