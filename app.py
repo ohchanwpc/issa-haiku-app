@@ -189,8 +189,6 @@ textarea {
 """
 st.markdown(CSS_GLOBAL, unsafe_allow_html=True)
 
-
-# ===== ステップ4: キーワード入力 =====
 # ===== ステップ4: キーワード入力 =====
 st.markdown(
     """
@@ -206,10 +204,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-keyword = st.text_input("", value="焼きいも")
-
-
 
 keyword = st.text_input("", value="焼きいも")
 
