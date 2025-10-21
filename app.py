@@ -178,7 +178,7 @@ CSS_GLOBAL = """
 
 /* Streamlit の入力フォーム全般に適用 */
 div[data-baseweb="input"] {
-    margin-top: 0 !important;        /* 上方向のマージンを削除 */
+    margin-top: -2 !important;        /* 上方向のマージンを削除 */
     padding-top: 0 !important;       /* 内側の余白も削除 */
 }
 textarea {
