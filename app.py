@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 from datetime import datetime
@@ -6,12 +5,22 @@ from datetime import datetime
 import streamlit as st
 from dotenv import load_dotenv
 from PIL import Image
+import traceback  # ← 追加（例外の全文を表示するため）
 
 # ---- Local modules (5-file structure) ----
-from haiku_core import load_haiku_df, pick_references
-from haiku_gpt import call_gpt_haiku, generate_english_tweet_block
-from image_gen import build_image_prompt, generate_image, save_artifacts
-from x_client import post_to_x
+try:
+    from haiku_core import load_haiku_df, pick_references
+    from haiku_gpt import call_gpt_haiku, generate_english_tweet_block
+    from image_gen import build_image_prompt, generate_image, save_artifacts
+    from x_client import post_to_x
+except Exception as e:
+    # Streamlit UI に赤枠で表示
+    st.error("❌ モジュールの読み込みに失敗しました。詳細を以下に表示します。")
+    # 例外トレース全文をUIに出力
+    st.code(traceback.format_exc(), language="python")
+    # この時点でアプリの後続処理を止める
+    st.stop()
+
 
 # =============================
 # App Config & ENV
