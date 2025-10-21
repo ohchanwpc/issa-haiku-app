@@ -430,7 +430,7 @@ POS_ANCHOR_TEXT = {
     "上部中央": "top-center"
 }
 if "pos_choice" not in st.session_state:
-    st.session_state.pos_choice = "左上"
+    st.session_state.pos_choice = "下部中央"
 if "inset_pct" not in st.session_state:
     st.session_state.inset_pct = 5
 if "min_bottom_px" not in st.session_state:
