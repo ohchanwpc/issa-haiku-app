@@ -3,6 +3,7 @@
 from __future__ import annotations
 import os, re, json, time, random, logging  # ← 既存のままOK
 from openai import OpenAI, RateLimitError, APIStatusError  # ← 既存のままOK
+from typing import Optional, Dict, Any, Callable  # ← 追加
 
 # ===== ロギング設定（既存の設定があれば邪魔しない）=====
 _logger = logging.getLogger("haiku_gpt")
@@ -12,9 +13,16 @@ if not _logger.handlers:
     _logger.addHandler(_handler)
     _logger.setLevel(logging.INFO)
 
-# 直近のAPI呼び出しメタ（UIやデバッグで使いたい時に参照可能）
-last_call_meta: dict | None = None
+last_call_meta: Optional[Dict[str, Any]] = None
 
+def _retry_call(
+    fn: Callable[[], Any],  # ← ついでに型ヒントも互換的に
+    *,
+    max_tries: int = 5,
+    base: float = 0.8,
+    cap: float = 8.0
+):
+    
 def _extract_request_id(err: Exception) -> str | None:
     """
     OpenAIの例外から request_id を可能なら取得（無ければ None）
