@@ -30,7 +30,9 @@ def build_image_prompt(haiku_ja: str, explanation_ja: str, season: str, keyword:
     ]
     motif = random.choice(ukiyo_elements)
 
-    prompt = f"""Utagawa Hiroshige style ukiyo-e, Edo-period {season_en}.
+    prompt = f"""Masterpiece in the style of Utagawa Hiroshige (1797–1858),
+renowned for poetic landscapes and dramatic perspective.
+Edo-period {season_en} ukiyo-e woodblock print.
 Haiku: {haiku_ja}
 Explanation: {explanation_ja}
 Keyword (seasonal word or theme): {keyword}
