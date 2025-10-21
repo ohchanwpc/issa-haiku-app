@@ -73,8 +73,8 @@ def build_image_prompt(haiku_ja: str, explanation_ja: str, season: str, keyword:
     prompt = f"""IMPORTANT HARD RULES:
 - The main subject MUST be the landscape, NOT people.
 - No foreground or midground people. 
-- Maximum figure size: <= 50 pixels tall on a 1024×1024 image (≈ <5% height), total area under 1/20.
-- Camera: vast nature as main subject.
+- Maximum figure size: <= 80–120 pixels tall on a 1024×1024 image (≈ 8–12%  height); keep faces minimally detailed..
+- Camera: scene-driven viewpoint (Example, coastal town / market street / temple precinct / open fields / seaside cliffs), chosen to fit the motif.
 Masterpiece in the style of Utagawa Hiroshige (1797–1858),
 renowned for poetic landscapes and dramatic perspective.
 Edo-period {season_en} ukiyo-e woodblock print.
@@ -82,7 +82,7 @@ Haiku: {haiku_ja}
 Explanation: {explanation_ja}
 Keyword (seasonal word or theme): {keyword}
 {aesthetic_line}- Composition: sweeping landscape fills the majority of the frame.
-  Humans or animals should appear extremely small and distant—tiny silhouettes—
+  + Humans or animals appear small and secondary—midground scale—
   emphasizing the vastness of nature. 
   Use dynamic diagonal layout and deep atmospheric perspective, in the manner of Utagawa Hiroshige’s landscapes.
   The horizon and flowing elements (rivers, hills, bridges, or coastlines) should draw the viewer’s eye into the distance.
