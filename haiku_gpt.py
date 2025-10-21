@@ -1,7 +1,98 @@
 
+# --- haiku_gpt.py (先頭付近) ---
 from __future__ import annotations
-import os, re, json, time, random, logging  # ← time, random, loggingを追加
-from openai import OpenAI, RateLimitError, APIStatusError  # ← 例外も追加
+import os, re, json, time, random, logging  # ← 既存のままOK
+from openai import OpenAI, RateLimitError, APIStatusError  # ← 既存のままOK
+
+# ===== ロギング設定（既存の設定があれば邪魔しない）=====
+_logger = logging.getLogger("haiku_gpt")
+if not _logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+    _logger.addHandler(_handler)
+    _logger.setLevel(logging.INFO)
+
+# 直近のAPI呼び出しメタ（UIやデバッグで使いたい時に参照可能）
+last_call_meta: dict | None = None
+
+def _extract_request_id(err: Exception) -> str | None:
+    """
+    OpenAIの例外から request_id を可能なら取得（無ければ None）
+    """
+    try:
+        resp = getattr(err, "response", None)
+        # SDK により response.request_id or resp.headers.get("x-request-id") など
+        req_id = getattr(resp, "request_id", None)
+        if not req_id and hasattr(resp, "headers"):
+            req_id = resp.headers.get("x-request-id")
+        return req_id
+    except Exception:
+        return None
+
+def _retry_call(fn, *, max_tries: int = 5, base: float = 0.8, cap: float = 8.0):
+    """
+    OpenAI呼び出しを指数バックオフ＋ジッターで再試行。
+    呼び出し側の挙動を壊さないため、（成功時）元の返り値、（失敗時）例外を再送出。
+    ただし副作用として、直近呼び出しのメタ情報を `last_call_meta` に保存する。
+    """
+    global last_call_meta
+    tries, start = 0, time.time()
+    while True:
+        try:
+            result = fn()
+            last_call_meta = {
+                "ok": True,
+                "tries": tries + 1,
+                "elapsed_sec": round(time.time() - start, 3),
+                "error": None,
+                "ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            # 情報ログ：成功
+            _logger.info(f"OpenAI call OK (tries={last_call_meta['tries']}, {last_call_meta['elapsed_sec']}s)")
+            return result
+        except (RateLimitError, APIStatusError) as e:
+            tries += 1
+            req_id = _extract_request_id(e)
+            # 警告ログ：リトライ予定
+            if tries < max_tries:
+                sleep = min(cap, base * (2 ** (tries - 1))) + random.uniform(0, 0.4)
+                _logger.warning(
+                    f"{e.__class__.__name__} (req_id={req_id}) → retry {tries}/{max_tries} in {sleep:.1f}s"
+                )
+                time.sleep(sleep)
+                continue
+            # エラーログ：打ち切り
+            last_call_meta = {
+                "ok": False,
+                "tries": tries,
+                "elapsed_sec": round(time.time() - start, 3),
+                "error": {
+                    "type": e.__class__.__name__,
+                    "msg": str(e),
+                    "request_id": req_id,
+                },
+                "ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            _logger.error(
+                f"OpenAI call failed after {tries} tries (req_id={req_id}): {e}"
+            )
+            raise  # ← 失敗時は従来どおり例外を投げる（既存の挙動を維持）
+
+        except Exception as e:
+            # 想定外例外：即終了（挙動維持のため再送出）
+            last_call_meta = {
+                "ok": False,
+                "tries": tries + 1,
+                "elapsed_sec": round(time.time() - start, 3),
+                "error": {
+                    "type": e.__class__.__name__,
+                    "msg": str(e),
+                    "request_id": None,
+                },
+                "ts": time.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            _logger.exception(f"Unexpected error during OpenAI call: {e}")
+            raise
 
 _client = None
 def _get_client() -> OpenAI:
@@ -9,6 +100,7 @@ def _get_client() -> OpenAI:
     if _client is None:
         _client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     return _client
+
 
 def call_gpt_haiku(payload: dict) -> dict:
     """新作俳句＋意訳＋参照理由をJSONで返す。"""
