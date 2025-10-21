@@ -173,7 +173,7 @@ CSS_GLOBAL = """
     font-size: 14px !important;      /* ステップ1と同じサイズ */
     font-weight: 400 !important;     /* 標準の太さ */
     margin-top: 0.8em !important;
-    margin-bottom: -3.2em !important; /* ←ここを微調整 */
+    margin-bottom: -1em !important; /* ←ここを微調整 */
 }
 
 /* Streamlit の入力フォーム全般に適用 */
