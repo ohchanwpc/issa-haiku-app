@@ -19,6 +19,24 @@ def build_image_prompt(haiku_ja: str, explanation_ja: str, season: str, keyword:
     season_en = {"春":"spring","夏":"summer","秋":"autumn","冬":"winter","新年":"new year","無季":"seasonless"}.get(season,"seasonal")
     aesthetic_line = "" if aesthetic == "スキップ" else f"Japanese aesthetic: {aesthetic}\n"
     ukiyo_elements = [
+         # 城下町・市街
+        "street market at early morning","rows of wooden townhouses under morning light",
+        "paper lanterns hanging along narrow alley","stone-paved path through temple gates",
+        "teahouse by roadside with travelers resting","sake brewery barrels by roadside",
+        "boats moored at busy harbor","village festival with banners fluttering",
+        # 海辺
+        "coastal cliffs and crashing waves","fishing boats returning at dusk",
+        "tide pools shimmering under sunset","seaside pines bent by wind",
+        # 田畑・集落
+        "terraced rice fields layered like steps","farmhouse with smoking hearth",
+        "persimmon trees heavy with fruit","thatched roofs between autumn fields",
+        # 神社仏閣
+        "shrine torii among old cedars","temple bell tower seen through mist",
+        "stone lanterns along temple path",
+        # 森林・道
+        "bamboo grove whispering in breeze","cedar avenue leading to distant shrine",
+        # 雪・雨・霧など気象風景
+        "rain falling on tile roofs","mist rising in morning valley","snow over village street",
         # ── 空・天候・光 ──
         "evening squall over rice paddies", "drizzle under paper umbrellas", "sudden downpour with gusting wind",
         "rainbow after storm over village", "low winter sun casting long shadows", "hazy spring dawn over fields",
