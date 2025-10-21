@@ -154,7 +154,7 @@ experience = {payload.get('experience')}
 {refs_numbered}
 """
 
-    resp = client.chat.completions.create(
+    resp = _retry_call(lambda: client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "system", "content": system_prompt},
                   {"role": "user", "content": user_prompt}],
