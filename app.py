@@ -192,12 +192,12 @@ st.markdown(CSS_GLOBAL, unsafe_allow_html=True)
 # ===== ステップ4: キーワード入力 =====
 st.markdown(
     """
-    <div style="margin-bottom: 0.5em;">
-        <p class="step-label">
+    <div style="margin-top: -0.8em; margin-bottom: 0.5em;">
+        <p class="step-label" style="margin-top: 0 !important;">
         ステップ4: キーワード（例：川、家族、影）を入力してください
         </p>
     </div>
-    <div style="margin-top: 0.5em; color: #666; font-size: 13px; line-height: 1.5;">
+    <div style="margin-top: 0.4em; color: #666; font-size: 13px; line-height: 1.5;">
         ※ 一茶の約2.2万句から検索するため、<b>「単語」入力のほうが多くの俳句がヒットします。</b><br>
         （文章を入れると条件に合う句が少なくなる場合があります）
     </div>
@@ -206,6 +206,7 @@ st.markdown(
 )
 
 keyword = st.text_input("", value="焼きいも")
+
 
 st.markdown('<p class="step-label">ステップ5: あなたの体験・感情を入力してください</p>', unsafe_allow_html=True)
 experience = st.text_area("", value="夕暮れ、道端の屋台から甘い煙が立ちのぼる。手の中の温もりが、季節の冷たさをやさしく包んだ。")
