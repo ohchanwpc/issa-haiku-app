@@ -210,7 +210,7 @@ keyword = st.text_input("", value="焼きいも")
 
 st.markdown(
     """
-    <p class="step-label" style="margin-top: 1.2em !important; margin-bottom: -2em !important;">
+    <p class="step-label" style="margin-top: 1.2em !important; margin-bottom: -10em !important;">
     ステップ5: あなたの体験・感情を入力してください
     </p>
     """,
