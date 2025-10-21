@@ -172,7 +172,7 @@ CSS_GLOBAL = """
 .step-label {
     font-size: 14px !important;      /* ステップ1と同じサイズ */
     font-weight: 400 !important;     /* 標準の太さ */
-    margin-top: -2em !important;
+    margin-top: -1em !important;
     margin-bottom: -1em !important; /* ←ここを微調整 */
 }
 
@@ -197,7 +197,7 @@ st.markdown(
         ステップ4: キーワード（例：川、家族、影）を入力してください
         </p>
     </div>
-    <div style="margin-top: 0.4em; color: #666; font-size: 13px; line-height: 1.5;">
+    <div style="margin-top: 1em; color: #666; font-size: 13px; line-height: 1.5;">
         ※ 一茶の約2.2万句から検索するため、<b>「単語」入力のほうが多くの俳句がヒットします。</b><br>
         （文章を入れると条件に合う句が少なくなる場合があります）
     </div>
