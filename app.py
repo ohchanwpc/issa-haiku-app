@@ -220,9 +220,17 @@ if st.button("ステップ7: 条件を確定（📚参照句を確定）"):
     st.session_state.image_prompt = None
     st.session_state.img = None
 
+    # ✅ ここを追加（確定表示＋参照句へ誘導＋expander自動オープン用フラグ）
+    st.session_state.just_locked_refs = True
+    st.success("📚 参照条件を確定しました。下の『📚 一茶の句からAIが選んだ参照句…』をご覧ください。")
+    try:
+        st.toast("✅ 参照句を確定しました。下へスクロールしてご確認ください。", icon="✅")
+    except Exception:
+        pass  # Streamlitのバージョンでtoastがない場合は無視
 
 # 参照句プレビュー
-with st.expander("📚 一茶の句からAIが選んだ参照句。🎵＝擬音語入り）", expanded=False):
+open_refs = bool(st.session_state.get("just_locked_refs", False))
+with st.expander("📚 一茶の句からAIが選んだ参照句。🎵＝擬音語入り）", expanded=open_refs):
     if st.session_state.references_locked and st.session_state.references:
         import pandas as pd
         ref_df = pd.DataFrame(st.session_state.references).rename(columns={
@@ -233,6 +241,7 @@ with st.expander("📚 一茶の句からAIが選んだ参照句。🎵＝擬音
         st.dataframe(ref_df[["No.","俳句","季節","感情","情緒","出典/年"]], use_container_width=True, hide_index=True)
     else:
         st.info("まだ参照句が確定していません。上の『条件を確定（参照句を確定）』を押してください。")
+
     if st.button("参照句を再抽出（ロック解除）"):
         st.session_state.references_locked = False
         st.session_state.references = None
@@ -240,6 +249,11 @@ with st.expander("📚 一茶の句からAIが選んだ参照句。🎵＝擬音
         st.session_state.image_prompt = None
         st.session_state.img = None
         st.rerun()
+
+# ✅ expander表示後にフラグをリセット（毎回開きっぱなしにならないように）
+if st.session_state.get("just_locked_refs"):
+    st.session_state.just_locked_refs = False
+
 DEBUG = False  # ← 本番時はFalse、開発時だけTrueに
 
 if DEBUG:
